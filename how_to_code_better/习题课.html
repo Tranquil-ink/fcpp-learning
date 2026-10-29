@@ -1,0 +1,1491 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>计算概论A · 习题课</title>
+<script>
+/* LaTeX 渲染（需联网加载一次，之后浏览器缓存） */
+window.MathJax = {
+  tex: {
+    inlineMath: [['\\(', '\\)']],
+    displayMath: [['\\[', '\\]']]
+  },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+<style>
+:root{
+  --pku-red:       #a6192e;
+  --pku-red-dark:  #7d0f20;
+  --ink:           #1f2329;
+  --ink-soft:      #5b6470;
+  --line:          #e4e7eb;
+  --bg-soft:       #f6f7f9;
+  --blue:          #2f6fed;
+  --amber:         #b7791f;
+  --green:         #1f8a4c;
+  --mono: "Cascadia Code", "JetBrains Mono", Consolas, "Courier New", monospace;
+}
+*{ margin:0; padding:0; box-sizing:border-box; }
+html,body{ height:100%; overflow:hidden; background:#0e1013;
+  font-family:"Microsoft YaHei","PingFang SC","Noto Sans CJK SC","Source Han Sans SC",sans-serif;
+  color:var(--ink); }
+#stage{ position:fixed; left:50%; top:50%; width:1280px; height:720px;
+  transform-origin:center center; background:#fff; box-shadow:0 10px 60px rgba(0,0,0,.5); }
+.slide{ position:absolute; inset:0; width:1280px; height:720px; padding:52px 72px 60px;
+  background:#fff; display:none; flex-direction:column; overflow:hidden; }
+.slide.active{ display:flex; animation:fadein .28s ease; }
+@keyframes fadein{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;} }
+.slide > header{ display:flex; align-items:center; gap:14px; margin-bottom:18px; }
+.slide > header .kicker{ font-size:15px; letter-spacing:2px; color:var(--pku-red); font-weight:700; }
+.slide > header .rule{ flex:1; height:1px; background:var(--line); }
+.slide > header .symbox{ flex:none; font-size:12px; color:var(--ink-soft);
+  background:var(--bg-soft); border:1px solid var(--line); border-radius:6px;
+  padding:6px 10px; white-space:nowrap; display:flex; flex-direction:column;
+  gap:2px; line-height:1.35; text-align:left; }
+.slide > footer{ position:absolute; left:72px; right:72px; bottom:24px;
+  display:flex; justify-content:space-between; font-size:13px; color:#9aa3ad; }
+.slide h2.title{ font-size:33px; font-weight:800; margin-bottom:14px; }
+.slide h2.title .no{ color:var(--pku-red); margin-right:14px; }
+.body{ flex:1; min-height:0; font-size:20px; line-height:1.6;
+  display:flex; flex-direction:column; }
+.body > *{ flex:0 0 auto; }
+.body > .cols, .body > .code{ flex:1 1 auto; min-height:0; }
+.body p{ margin:8px 0; }
+.body ul, .body ol{ margin:8px 0 8px 1.3em; }
+.body li{ margin:5px 0; }
+.body code, p code, li code{ font-family:var(--mono); font-size:.88em; background:var(--bg-soft);
+  border:1px solid var(--line); border-radius:5px; padding:1px 7px; color:var(--pku-red-dark); }
+.code pre code{ display:block; background:none; border:none; border-radius:0;
+  padding:0; color:inherit; font-size:inherit; line-height:inherit; }
+.code pre code span{ background:none; }
+
+.slide.cover{ background:linear-gradient(135deg,#7d0f20 0%,#a6192e 55%,#c43a4d 100%);
+  color:#fff; justify-content:center; padding:0 96px; }
+.slide.cover .c-kicker{ font-size:20px; letter-spacing:6px; opacity:.85; margin-bottom:22px; }
+.slide.cover h1{ font-size:58px; font-weight:900; line-height:1.25; margin-bottom:18px; }
+.slide.cover .c-sub{ font-size:24px; opacity:.92; margin-bottom:60px; }
+.slide.cover .c-meta{ display:flex; gap:48px; font-size:18px; opacity:.85;
+  border-top:1px solid rgba(255,255,255,.35); padding-top:22px; }
+.slide.cover .c-badge{ position:absolute; right:72px; top:52px; width:84px; height:84px;
+  border:3px solid rgba(255,255,255,.8); border-radius:50%;
+  display:flex; align-items:center; justify-content:center; font-weight:800; font-size:22px; }
+
+.problem-head{ display:flex; align-items:center; gap:18px; flex-wrap:wrap; margin-bottom:12px; }
+.problem-head .p-no{ background:var(--pku-red); color:#fff; font-weight:800; font-size:20px;
+  padding:6px 18px; border-radius:8px; }
+.problem-head .p-title{ font-size:30px; font-weight:800; }
+.tag{ display:inline-block; font-size:14px; font-weight:600; color:var(--pku-red);
+  background:#fbe9ec; border:1px solid #f2c9cf; border-radius:999px; padding:3px 14px; margin:0 6px 6px 0; }
+.tag.blue{ color:var(--blue); background:#e9f0fe; border-color:#c8d9fb; }
+.bigo{ font-family:var(--mono); font-size:16px; font-weight:700; color:#fff;
+  background:var(--ink); border-radius:6px; padding:3px 12px; margin-right:8px; }
+
+.callout{ border-radius:12px; padding:14px 20px; margin:12px 0; font-size:19px;
+  border-left:6px solid; background:var(--bg-soft); }
+.callout .co-title{ font-weight:800; margin-bottom:4px; }
+.callout.hint { border-color:var(--blue);  background:#eef4ff; } .callout.hint .co-title{ color:var(--blue); }
+.callout.warn { border-color:#d64545; background:#fdeeee; } .callout.warn .co-title{ color:#c62f2f; }
+.callout.idea { border-color:var(--amber);background:#fdf6e9; } .callout.idea .co-title{ color:var(--amber); }
+.callout.note { border-color:var(--green); background:#ecf8f1; } .callout.note .co-title{ color:var(--green); }
+
+.io{ display:flex; gap:22px; margin:12px 0; }
+.io .box{ flex:1; border:1px solid var(--line); border-radius:12px; overflow:hidden; }
+.io .box .io-title{ font-size:15px; font-weight:700; padding:8px 16px; background:var(--bg-soft);
+  border-bottom:1px solid var(--line); color:var(--ink-soft); }
+.io .box pre{ font-family:var(--mono); font-size:18px; padding:12px 16px; line-height:1.5; background:#fff; }
+
+.code{ display:flex; flex-direction:column; border-radius:12px; overflow:hidden; margin:10px 0; border:1px solid #2b3138; }
+.code .code-bar{ display:flex; align-items:center; gap:8px; background:#2b3138; padding:7px 14px; }
+.code .code-bar .dot{ width:11px; height:11px; border-radius:50%; }
+.code .code-bar .fname{ color:#9aa3ad; font-size:14px; font-family:var(--mono); margin-left:8px; }
+.code pre{ flex:1 1 auto; min-height:0; overflow:auto;
+  background:#1e2227; color:#d7dde4; font-family:var(--mono); font-size:15.5px;
+  line-height:1.5; padding:13px 18px; }
+.tok-kw{ color:#c792ea; } .tok-type{ color:#82aaff; } .tok-str{ color:#c3e88d; }
+.tok-num{ color:#f78c6c; } .tok-com{ color:#5f6b76; font-style:italic; }
+.tok-pre{ color:#ffcb6b; }
+
+.cols{ display:flex; gap:28px; align-items:stretch; min-height:0; }
+.cols .col-l{ flex:3; min-width:0; display:flex; flex-direction:column; min-height:0; }
+.cols .col-l .code{ flex:1 1 auto; min-height:0; }
+.cols .col-r{ flex:2; min-width:0; overflow:auto; }
+
+.steps{ counter-reset:step; margin:6px 0; }
+.steps .step{ counter-increment:step; display:flex; gap:14px; margin:11px 0; align-items:flex-start; }
+.steps .step::before{ content:counter(step); flex:none; width:32px; height:32px; border-radius:50%;
+  background:var(--pku-red); color:#fff; font-weight:800; font-size:16px;
+  display:flex; align-items:center; justify-content:center; }
+.steps .step .st-body{ flex:1; }
+.steps .step .st-body b{ color:var(--pku-red-dark); }
+
+.frag{ opacity:0; visibility:hidden; transform:translateY(10px);
+  transition:opacity .3s ease, transform .3s ease, visibility .3s; }
+.frag.on{ opacity:1; visibility:visible; transform:none; }
+
+#progress{ position:fixed; left:0; top:0; height:3px; background:var(--pku-red); width:0; z-index:99;
+  transition:width .25s ease; }
+#pager{ position:fixed; right:18px; bottom:14px; z-index:99; color:#cfd4da;
+  font-family:var(--mono); font-size:14px; background:rgba(0,0,0,.45); padding:4px 12px; border-radius:6px; }
+#help{ position:fixed; left:18px; bottom:14px; z-index:99; color:#8b949e; font-size:12px; }
+
+/* 目录总览：按 O 打开，点击跳转，Esc 关闭 */
+#overview{ position:fixed; inset:0; z-index:200; background:rgba(10,12,15,.95);
+  display:none; padding:36px 48px; overflow:auto; }
+#overview.open{ display:block; }
+#overview .ov-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+  gap:14px; max-width:1180px; margin:0 auto; }
+#overview .ov-item{ background:#1c2127; border:2px solid #333a42; border-radius:10px;
+  padding:12px 14px; cursor:pointer; color:#cfd4da; min-height:76px;
+  display:flex; flex-direction:column; gap:3px; }
+#overview .ov-item:hover{ border-color:var(--pku-red); }
+#overview .ov-item.cur{ border-color:var(--pku-red); background:#33161b; }
+#overview .ov-no{ font-family:var(--mono); font-size:12px; color:#8b949e; }
+#overview .ov-kick{ font-size:11px; color:#c97f8a; letter-spacing:1px; }
+#overview .ov-title{ font-size:14px; font-weight:600; color:#e6e9ed; line-height:1.45; }
+
+@media print{
+  html,body{ overflow:visible; background:#fff; }
+  #stage{ position:static; transform:none !important; width:auto; height:auto; box-shadow:none; }
+  .slide{ position:relative; display:flex !important; width:1280px; height:720px;
+    page-break-after:always; animation:none; }
+  #progress,#pager,#help,#overview{ display:none; }
+  .frag{ opacity:1 !important; visibility:visible !important; transform:none !important; }
+}
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+<div id="stage">
+
+<!-- 1. 封面 -->
+<section class="slide cover active">
+  <div class="c-badge">PKU</div>
+  <div class="c-kicker">计算概论 A</div>
+  <h1>习题课</h1>
+  <div class="c-meta">
+    <span>主讲：李戈</span>
+    <span>助教：赵泽宇、朱丽烨</span>
+    <span>2026 年秋季学期</span>
+  </div>
+</section>
+
+<!-- 2. 题目页 -->
+<section class="slide">
+  <header><span class="kicker">题目</span><span class="rule"></span></header>
+  <div class="body">
+    <div class="problem-head">
+      <span class="p-no">第 1 题</span>
+      <span class="p-title">求亲和数</span>
+    </div>
+    <div class="callout" style="border-color:var(--line);background:var(--bg-soft);font-size:18px;line-height:1.7">
+      <p><b>题目描述</b>　遥远的古代，人们发现某些自然数之间有特殊的关系：设有两个数a和b，若a的所有除本身以外的因数之和等于b，b的所有除本身以外的因数之和等于a，则称a、b是一对亲和数。</p>
+      <p>例如220和284：220的真因数包括：1,2,4,5,10,11,20,22,44,55,110. 1 + 2 + 4 + 5 + 10 + 11 + 20 + 22 + 44 + 55 + 110 = 284；284的真因数包括：1,2,4,71,142. 1 + 2 + 4 + 71 + 142 = 220。所以220和284是一对亲和数。</p>
+      <p><b>关于输入</b>　一个正整数n，1&lt;=n&lt;=100000。</p>
+      <p><b>关于输出</b>　所有亲和数对"a b"，满足a和b均小于等于n。每个亲和数对占一行，两个数之间用一个空格隔开，较小数在前，较大数在后。对于多个亲和数对，以较小数递增的顺序输出它们。</p>
+    </div>
+    <div class="io">
+      <div class="box">
+        <div class="io-title">例子输入</div>
+        <pre>1500</pre>
+      </div>
+      <div class="box">
+        <div class="io-title">例子输出</div>
+        <pre>220 284
+1184 1210</pre>
+      </div>
+    </div>
+  </div>
+  <footer><span>计算概论A · 习题课</span><span></span></footer>
+</section>
+
+<!-- 3. 解法一：思路与核心函数 -->
+<section class="slide">
+  <header><span class="kicker">解法一 · 质因数分解</span><span class="rule"></span></header>
+  <h2 class="title"><span class="no">思路</span>先分解，再用公式求因数和</h2>
+  <div class="body">
+    <p>部分同学的做法：把 \(a\) 分解为 \(a=p_1^{k_1}\cdot p_2^{k_2}\cdots\)，全部因数之和 \(\sigma(a)=\prod_j\left(1+p_j+\cdots+p_j^{k_j}\right)\)，真因数和就是 \(\sigma(a)-a\)；算出 \(b\) 后，再分解 \(b\) 验证 \(\sigma(b)-b\) 是否等于 \(a\)。</p>
+    <div class="callout idea frag">
+      <div class="co-title">例子：\(a=12\) 的因数和</div>
+      分解质因数：\(12 = 2^2 \cdot 3^1\)，套用公式
+      \[\sigma(12) = (1+2+2^2)\times(1+3^1) = (1+2+4)\times(1+3) = 7\times 4 = 28.\]
+      为什么成立：乘积展开时每个括号各选一项，恰好枚举出全部因数（如 \(2^0\cdot3^0=1\)、\(2^2\cdot3^1=12\)）。
+      验证：12 的因数有 \(1, 2, 3, 4, 6, 12\)，加起来正好是 28。
+    </div>
+    <div class="callout warn frag" style="margin-bottom:2px">
+      <div class="co-title">实际作业中</div>
+      用这套思路的同学往往还先写一个<b>质数筛</b>（埃氏筛）：筛出 \(10^5\) 以内的素数，分解时只拿素数试除、跳过合数。思路没错，但代码又多了一层——下一页是包含筛法的完整程序。
+    </div>
+    <div class="callout hint frag" style="font-size:14.5px;line-height:1.4;padding:6px 12px;margin:4px 0 0">
+      <b>小贴士 · 数组</b>：储存一系列数在某一维度上的<b>性质 / 状态</b>（是否是质数？是否被传染）——如下一页的 <code>composite[]</code> 就是「是否合数」。
+    </div>
+  </div>
+  <footer><span>计算概论A · 习题课</span><span></span></footer>
+</section>
+
+<!-- 4. 解法一：主流程与评价 -->
+<section class="slide">
+  <header><span class="kicker">解法一 · 质因数分解</span><span class="rule"></span></header>
+  <h2 class="title"><span class="no">完整代码</span>这个解法能不能用</h2>
+  <div class="body">
+    <div class="cols">
+      <div class="col-l">
+        <div class="code">
+          <div class="code-bar">
+            <span class="dot" style="background:#ff5f57"></span>
+            <span class="dot" style="background:#febc2e"></span>
+            <span class="dot" style="background:#28c840"></span>
+            <span class="fname">amicable1.cpp</span>
+          </div>
+          <pre><code class="cpp">#include &lt;iostream&gt;
+using namespace std;
+
+const int N = 100000;
+bool composite[N + 1];          // 合数标记：composite[i] 为 true 表示 i 是合数
+int primes[N], primeCount;      // primes[] 存放筛出的素数，primeCount 记录个数
+
+// 埃氏筛：收集 n 以内的所有素数
+// 核心思想：未被标记为合数的数就是素数；每找到一个素数 i，就把它的所有倍数标记为合数
+void sieve(int n) {
+    for (int i = 2; i &lt;= n; i++) {          // 从 2 开始逐个检查
+        if (composite[i]) continue;         // i 已被更小的素数标记过：是合数，跳过
+        primes[primeCount++] = i;           // 未被标记：i 是素数，存入 primes[]
+        for (int j = i + i; j &lt;= n; j += i)  // 从 2i 开始、步长为 i，枚举 i 的所有倍数
+            composite[j] = true;            // 把这些倍数全部标记为合数
+    }
+}
+
+// x 的全部因数之和（含 1 和 x 本身）
+int sigma(int x) {
+    int sum = 1;
+    for (int j = 0; primes[j] * primes[j] &lt;= x; j++) {
+        int p = primes[j];
+        if (x % p) continue;
+        int term = 1, pk = 1;          // 累加 1 + p + ... + p^k
+        while (x % p == 0) {
+            x /= p;
+            pk *= p;
+            term += pk;
+        }
+        sum *= term;
+    }
+    if (x &gt; 1) sum *= 1 + x;           // 还剩下一个大于 sqrt(x) 的素因子
+    return sum;
+}
+
+int main() {
+    sieve(N);
+    int n;
+    cin &gt;&gt; n;
+    for (int a = 2; a &lt;= n; a++) {
+        int b = sigma(a) - a;          // a 的真因数之和
+        if (b &gt; n || b &lt;= a) continue;
+        if (sigma(b) - b == a)
+            cout &lt;&lt; a &lt;&lt; " " &lt;&lt; b &lt;&lt; "\n";
+    }
+    return 0;
+}</code></pre>
+        </div>
+      </div>
+      <div class="col-r">
+        <div class="callout note">
+          <div class="co-title">结论</div>
+          思路正确，提交后可以通过本题。
+        </div>
+        <div class="callout idea frag">
+          <div class="co-title">代价</div>
+          <ul>
+            <li>筛法、分解、公式求和、二次验证，<b>每个环节都可能写错</b></li>
+            <li>只用素数试除，一次分解要试除 \(\pi(\sqrt{x})\approx\dfrac{\sqrt{x}}{\ln\sqrt{x}}\) 个素数——比逐个枚举 \(d\) 少一个对数因子，但总量仍是 \(n^{3/2}\) 级别，没有质变</li>
+            <li>本题 \(n\le 10^5\)，这套方法用不上</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer><span>计算概论A · 习题课</span><span></span></footer>
+</section>
+
+<!-- 5. 解法二：思路与复杂度 -->
+<section class="slide">
+  <header><span class="kicker">解法二 · 直接枚举</span><span class="rule"></span></header>
+  <h2 class="title"><span class="no">思路</span>枚举因数到 \(\sqrt{x}\) 即可</h2>
+  <div class="body">
+    <div class="steps">
+      <div class="step frag"><div class="st-body">因数成对出现：\(d\) 是 \(x\) 的因数，\(x/d\) 也是。只需枚举 \(d\le\sqrt{x}\)，一次得到两个因数。</div></div>
+      <div class="step frag"><div class="st-body">写函数 <code>sumDiv(x)</code>，返回 x 的真因数之和。</div></div>
+      <div class="step frag"><div class="st-body">对每个 \(a\in[2,n]\)，令 <code>b = sumDiv(a)</code>；若 \(b\le n\) 且 <code>sumDiv(b) == a</code>，则 \((a,b)\) 是一对。</div></div>
+      <div class="step frag"><div class="st-body">只输出 \(a&lt;b\) 的对，顺序和不重复都能保证。</div></div>
+    </div>
+    <div class="callout note frag">
+      <div class="co-title">复杂度</div>
+      单个 sumDiv 是 \(O(\sqrt{a})\)，总计 \(\sum_{a=2}^{n}\sqrt{a}\approx\frac{2}{3}n^{3/2}\)。\(n=10^5\) 时约 \(2\times10^7\) 次运算，可以通过。
+    </div>
+  </div>
+  <footer><span>计算概论A · 习题课</span><span></span></footer>
+</section>
+
+<!-- 6. 容易出错的两处 -->
+<section class="slide">
+  <header><span class="kicker">解法二 · 直接枚举</span><span class="rule"></span></header>
+  <h2 class="title"><span class="no">注意</span>容易出错的两处</h2>
+  <div class="body">
+    <div class="callout warn frag">
+      <div class="co-title">完全平方数</div>
+      \(x\) 是完全平方数时（如 \(36=6\times6\)），枚举到 \(d=6\) 时 \(d\) 与 \(x/d\) 是同一个数，不判断会重复累加，结果偏大。应写 <code>if (d * d != x) sum += x / d;</code>。
+    </div>
+    <div class="callout warn frag">
+      <div class="co-title">另一个数可能超过 n</div>
+      \(b = \mathrm{sumDiv}(a)\) 可能大于 \(n\)，例如 \(n=250\) 时 \(a=220\) 的伙伴是 284。必须先判断 \(b\le n\) 再验证和输出，否则多出不合法的数对。
+    </div>
+    <div class="callout idea frag">
+      <div class="co-title">补充</div>
+      <ul>
+        <li>用 <code>b &lt;= a</code> 跳过，可以同时解决「每对只输出一次」和「完全数（b = a）不算亲和数」两个问题。</li>
+        <li>枚举边界写成 <code>d * d &lt;= x</code>：不用除法，也不用浮点 <code>sqrt</code>，整数判断没有精度问题。</li>
+      </ul>
+    </div>
+    <div class="callout hint frag" style="font-size:14.5px;line-height:1.4;padding:6px 12px;margin:4px 0 0">
+      <b>小贴士</b>：利用报错 / 自己设计一些数据，看是不是有些边界条件没考虑到。
+    </div>
+  </div>
+  <footer><span>计算概论A · 习题课</span><span></span></footer>
+</section>
+
+<!-- 7. 解法二：完整代码 -->
+<section class="slide">
+  <header><span class="kicker">解法二 · 直接枚举</span><span class="rule"></span></header>
+  <h2 class="title"><span class="no">代码</span>完整实现</h2>
+  <div class="body">
+    <div class="cols">
+      <div class="col-l">
+        <div class="code">
+          <div class="code-bar">
+            <span class="dot" style="background:#ff5f57"></span>
+            <span class="dot" style="background:#febc2e"></span>
+            <span class="dot" style="background:#28c840"></span>
+            <span class="fname">amicable2.cpp</span>
+          </div>
+          <pre><code class="cpp">#include &lt;iostream&gt;
+using namespace std;
+
+// x 的真因数之和（不含 x 本身）
+int sumDiv(int x) {
+    int sum = 1;                       // 每个 x &gt; 1 都有因数 1
+    for (int d = 2; d * d &lt;= x; d++) { // 枚举到 sqrt(x) 为止
+        if (x % d == 0) {
+            sum += d;
+            if (d * d != x)            // 平方根只计一次
+                sum += x / d;
+        }
+    }
+    return sum;
+}
+
+int main() {
+    int n;
+    cin &gt;&gt; n;
+    for (int a = 2; a &lt;= n; a++) {
+        int b = sumDiv(a);
+        if (b &gt; n)  continue;          // 伙伴不能超过 n
+        if (b &lt;= a) continue;          // 每对只输出一次，保持 a &lt; b
+        if (sumDiv(b) == a)
+            cout &lt;&lt; a &lt;&lt; " " &lt;&lt; b &lt;&lt; "\n";
+    }
+    return 0;
+}</code></pre>
+        </div>
+      </div>
+      <div class="col-r">
+        <div class="callout idea">
+          <div class="co-title">要点</div>
+          <ul>
+            <li>循环条件写 <code>d * d &lt;= x</code>：整数乘法判断，没有浮点 <code>sqrt</code> 的精度问题；本题 \(d^2\le x\le 10^5\)，不会溢出</li>
+            <li>\(b&gt;n\) 与 \(b\le a\) 两个判断都要有；验证是双向的</li>
+            <li>对比上一解法：没有筛法、没有公式，一个函数讲清一件事</li>
+          </ul>
+        </div>
+        <div class="callout note">
+          <div class="co-title">运行结果（n = 1500）</div>
+          <pre style="font-family:var(--mono);font-size:17px;margin-top:4px">220 284
+1184 1210</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer><span>计算概论A · 习题课</span><span></span></footer>
+</section>
+
+
+<!-- ============ 第 2 题 ============ -->
+
+<!-- 20. 题目页（原始题干） -->
+<section class="slide">
+  <header><span class="kicker">题目</span><span class="rule"></span><span class="symbox">来源：24年期中题7</span></header>
+  <div class="body">
+    <div class="problem-head">
+      <span class="p-no">第 2 题</span>
+      <span class="p-title">除法计算</span>
+    </div>
+    <div class="callout" style="border-color:var(--line);background:var(--bg-soft);font-size:18px;line-height:1.7">
+      <p><b>题目描述</b>　小P正在计算一个正整数除法a/b，但是他并不想知道结果具体是多少，他只想知道将结果化为小数之后，形成的循环节长度是多少。例如:1 / 90的结果为0.011111...，循环节长度为1。如果结果不为循环小数，则认为循环节长度是0。</p>
+      <p><b>关于输入</b>　两个正整数a,b,满足1≤a,b≤1000。</p>
+      <p><b>关于输出</b>　输出a/b循环节长度。</p>
+    </div>
+    <div class="io">
+      <div class="box">
+        <div class="io-title">例子输入</div>
+        <pre>2 7</pre>
+      </div>
+      <div class="box">
+        <div class="io-title">例子输出</div>
+        <pre>6</pre>
+      </div>
+    </div>
+    <div class="callout note frag">
+      <div class="co-title">验证</div>
+      \(2/7 = 0.\overline{285714}\)，循环节 285714 长 6；\(1/90 = 0.0\overline{1}\)，循环节长 1。
+    </div>
+  </div>
+  <footer><span>计算概论A · 习题课</span><span></span></footer>
+</section>
+
+<!-- 21. 解法一（模拟）：思路 -->
+<section class="slide">
+  <header><span class="kicker">解法一 · 模拟</span><span class="rule"></span></header>
+  <h2 class="title"><span class="no">思路</span>余数决定一切</h2>
+  <div class="body">
+    <div class="steps">
+      <div class="step frag"><div class="st-body">长除法每一步只依赖当前余数 \(r\)：下一位数字是 \(\left\lfloor\frac{10r}{b}\right\rfloor\)，新余数是 \(10r \bmod b\)。</div></div>
+      <div class="step frag"><div class="st-body">余数一旦相同，后面的数字<b>完全重复</b>。余数只有 \(b\) 种取值（\(0\) 到 \(b-1\)），所以至多 \(b+1\) 步必出现重复——循环节一定存在。</div></div>
+      <div class="step frag"><div class="st-body">若某一步余数变成 \(0\)，小数到此结束，是<b>有限小数</b>，答案为 \(0\)。</div></div>
+      <div class="step frag"><div class="st-body">算法：开数组 <code>pos</code>，<code>pos[r]</code> 记录余数 \(r\) 第一次出现的位置。从 \(r = a \bmod b\) 出发，每步先记录当前余数的位置，再令 \(r \leftarrow 10r \bmod b\)，直到余数变成 \(0\)（输出 \(0\)）或撞上已记录过的余数（输出两次位置之差）。</div></div>
+    </div>
+    <div class="callout note frag">
+      <div class="co-title">样例验证（2/7）</div>
+      余数依次为 \(2,6,4,5,1,3,2\)：第 7 个余数重复，首次出现位置从 \(0\) 计起，间隔 \(6-0=6\)，正是循环节 \(285714\) 的长度。
+    </div>
+    <div class="callout hint frag" style="font-size:14.5px;line-height:1.4;padding:6px 12px;margin:4px 0 0">
+      <b>呼应第 3 页</b>：余数只有 \(b\) 种可能 → 重复即循环 → 用数组记状态——<code>pos[r]</code> 存的正是「余数 \(r\) 的状态」。
+    </div>
+  </div>
+  <footer><span>计算概论A · 习题课</span><span></span></footer>
+</section>
+
+<!-- 22. 解法一（模拟）：代码 -->
+<section class="slide">
+  <header><span class="kicker">解法一 · 模拟</span><span class="rule"></span></header>
+  <h2 class="title"><span class="no">代码</span>记余数，第一次重复即循环节</h2>
+  <div class="body">
+    <div class="cols">
+      <div class="col-l">
+        <div class="code">
+          <div class="code-bar">
+            <span class="dot" style="background:#ff5f57"></span>
+            <span class="dot" style="background:#febc2e"></span>
+            <span class="dot" style="background:#28c840"></span>
+            <span class="fname">cycle.cpp</span>
+          </div>
+          <pre><code class="cpp">#include &lt;iostream&gt;
+#include &lt;cstring&gt;
+using namespace std;
+
+int main() {
+    int a, b;
+    cin &gt;&gt; a &gt;&gt; b;
+    int pos[1005];                  // pos[r]：余数 r 第一次出现的位置
+    memset(pos, -1, sizeof(pos));
+    int r = a % b;                  // 跳过整数部分
+    int cur = 0;                    // 目前已产生的小数位数
+    while (r != 0 &amp;&amp; pos[r] == -1) {
+        pos[r] = cur;
+        r = r * 10 % b;
+        cur++;
+    }
+    if (r == 0) cout &lt;&lt; 0 &lt;&lt; endl;  // 有限小数
+    else cout &lt;&lt; cur - pos[r] &lt;&lt; endl;
+    return 0;
+}</code></pre>
+        </div>
+      </div>
+      <div class="col-r">
+        <div class="callout idea">
+          <div class="co-title">要点</div>
+          <ul>
+            <li><code>pos[r]</code> 记录余数第一次出现的位置，−1 表示没出现过</li>
+            <li>余数变 0：有限小数，输出 0；余数重复：间隔 <code>cur - pos[r]</code> 就是循环节长度</li>
+            <li>\(O(b)\) 时间 \(O(b)\) 空间，不需要任何数论知识</li>
+          </ul>
+        </div>
+        <div class="callout note">
+          <div class="co-title">运行结果</div>
+          <pre style="font-family:var(--mono);font-size:17px;margin-top:4px">输入  2 7
+输出  6</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer><span>计算概论A · 习题课</span><span></span></footer>
+</section>
+
+<!-- 23. 解法二（数论）：思路 -->
+<section class="slide">
+  <header><span class="kicker">解法二 · 数论</span><span class="rule"></span></header>
+  <h2 class="title"><span class="no">思路</span>循环节长度是 \(10\) 的阶</h2>
+  <div class="body">
+    <div class="steps">
+      <div class="step frag"><div class="st-body">先约分（分子分母同除以 \(\gcd(a,b)\)），答案只与约分后的分母 \(b'\) 有关：分子不改变小数部分的循环结构。</div></div>
+      <div class="step frag"><div class="st-body">有限小数，当且仅当 \(b'\) 的素因子只有 \(2\) 和 \(5\)（把 \(2\)、\(5\) 除光后剩下 \(1\)），此时答案为 \(0\)。<br>例如 \(\frac18=0.125\)（分母 \(8=2^3\)）、\(\frac1{20}=0.05\)（分母 \(20=2^2\cdot5\)）。</div></div>
+      <div class="step frag"><div class="st-body">否则，循环节长度等于最小的正整数 \(t\)，使 \(10^{t}\equiv 1\pmod{b'}\)。<br>理由：小数部分以 \(t\) 为周期，当且仅当 \(\frac{a}{b'}\) 与 \(\frac{10^{t}a}{b'}\) 的小数部分相同，当且仅当 \(b'\mid a(10^{t}-1)\)。<br>又 \(\gcd(a,b')=1\)，故当且仅当 \(b'\mid(10^{t}-1)\)。</div></div>
+      <div class="step frag"><div class="st-body">这样的 \(t\) 必然存在：去掉因子 \(2\)、\(5\) 后 \(\gcd(10,b')=1\)，欧拉定理给出 \(10^{\varphi(b')}\equiv 1\pmod{b'}\)，且 \(\varphi(b')\le b'-1\le 999\)，从小到大枚举 \(t\) 必能命中。</div></div>
+    </div>
+    <div class="callout note frag">
+      <div class="co-title">验证</div>
+      \(1/90\)：约分后 \(b'=9\)，\(10^{1}\equiv 1\pmod 9\)，长度 \(1\)。\(2/7\)：\(b'=7\)，\(10^{6}\equiv 1\pmod 7\) 且更小的 \(t\) 都不行，长度 \(6\)。
+    </div>
+  </div>
+  <footer><span>计算概论A · 习题课</span><span></span></footer>
+</section>
+
+<!-- 24. 解法二（数论）：代码 -->
+<section class="slide">
+  <header><span class="kicker">解法二 · 数论</span><span class="rule"></span></header>
+  <h2 class="title"><span class="no">代码</span>约分、去 2/5、找阶</h2>
+  <div class="body">
+    <div class="cols">
+      <div class="col-l">
+        <div class="code">
+          <div class="code-bar">
+            <span class="dot" style="background:#ff5f57"></span>
+            <span class="dot" style="background:#febc2e"></span>
+            <span class="dot" style="background:#28c840"></span>
+            <span class="fname">cycle2.cpp</span>
+          </div>
+          <pre><code class="cpp">#include &lt;iostream&gt;
+using namespace std;
+
+int gcd(int a, int b) { return b == 0 ? a : gcd(b, a % b); }
+
+int main() {
+    int a, b;
+    cin &gt;&gt; a &gt;&gt; b;
+    b /= gcd(a, b);              // 约分：分子分母同除以 gcd
+    while (b % 2 == 0) b /= 2;   // 去掉因子 2
+    while (b % 5 == 0) b /= 5;   // 去掉因子 5
+    if (b == 1) {                // 只剩因子 2、5：有限小数
+        cout &lt;&lt; 0 &lt;&lt; endl;
+        return 0;
+    }
+    int p = 10 % b;
+    for (int t = 1; ; t++) {     // 最小的 t 使 10^t ≡ 1 (mod b)
+        if (p == 1) { cout &lt;&lt; t &lt;&lt; endl; break; }
+        p = p * 10 % b;
+    }
+    return 0;
+}</code></pre>
+        </div>
+      </div>
+      <div class="col-r">
+        <div class="callout idea">
+          <div class="co-title">要点</div>
+          <ul>
+            <li>\(p\) 始终等于 \(10^{t}\bmod b\)：初始 \(p = 10\bmod b\)，每步 \(p\leftarrow 10p\bmod b\)，与 \(t\) 同步递增</li>
+            <li>第一次出现 \(p=1\) 时的 \(t\) 就是阶，即循环节长度</li>
+            <li>与 \(999\ldots9\) 取模判法等价：\(b\mid\underbrace{99\cdots9}_{t}\iff 10^{t}\equiv 1\pmod b\)；全程 \(O(b)\)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer><span>计算概论A · 习题课</span><span></span></footer>
+</section>
+
+<!-- ============ 第 3 题 ============ -->
+
+<!-- 8. 题目页（原始题干） -->
+<section class="slide">
+  <header><span class="kicker">题目</span><span class="rule"></span><span class="symbox">来源：第二阶段编程练习（2）4</span></header>
+  <div class="body">
+    <div class="problem-head">
+      <span class="p-no">第 3 题</span>
+      <span class="p-title">计算两个日期之间的天数</span>
+    </div>
+    <div class="callout" style="border-color:var(--line);background:var(--bg-soft);font-size:18px;line-height:1.7">
+      <p><b>题目描述</b>　给定两个年月日，计算之间的天数。例如 2010-1-1 和 2010-1-3 之间差2天。</p>
+      <p>year = 1, 2, ..., 3000.</p>
+      <p>需要考虑闰年情况：闰年的2月份有29天。闰年是：(year % 4 == 0 &amp;&amp; year % 100 != 0) || (year % 400 == 0)。</p>
+      <p><b>关于输入</b>　第一行 startYear startMonth startDay；第二行 endYear endMonth endDay。</p>
+      <p><b>关于输出</b>　输出只有一行是两个日期之间的天数。</p>
+    </div>
+    <div class="io">
+      <div class="box">
+        <div class="io-title">例子输入</div>
+        <pre>2008 1 1
+2009 1 1</pre>
+      </div>
+      <div class="box">
+        <div class="io-title">例子输出</div>
+        <pre>366</pre>
+      </div>
+    </div>
+  </div>
+  <footer><span>计算概论A · 习题课</span><span></span></footer>
+</section>
+
+<!-- 9. 闰年规则 -->
+<section class="slide">
+  <header><span class="kicker">闰年</span><span class="rule"></span></header>
+  <h2 class="title"><span class="no">规则</span>闰年怎么判断</h2>
+  <div class="body">
+    <p>题干已经给出规则：<code>(year % 4 == 0 &amp;&amp; year % 100 != 0) || (year % 400 == 0)</code></p>
+    <table class="grid">
+      <tr><th>年份</th><th>能否被 4 整除</th><th>是否闰年</th></tr>
+      <tr><td>2008</td><td>能，且不是整百年</td><td>是</td></tr>
+      <tr><td>1900</td><td>能，但是整百年，不能被 400 整除</td><td>否</td></tr>
+      <tr><td>2000</td><td>能，是整百年，且能被 400 整除</td><td>是</td></tr>
+    </table>
+    <div class="callout idea frag">
+      <div class="co-title">含义</div>
+      闰年 366 天，平年 365 天，差别只在二月（29 天或 28 天）。规则分两层：先要求能被 4 整除；整百年（如 1900、2100）例外，必须能被 400 整除才算。
+    </div>
+    <div class="callout warn frag">
+      <div class="co-title">常见错误</div>
+      只写 <code>year % 4 == 0</code>，会把 1900、2100 误判为闰年，二月按 29 天算，结果出错。这道题的数据范围到公元 3000 年，2100、2200 这类年份一定会被测试到。
+    </div>
+  </div>
+  <footer><span>计算概论A · 习题课</span><span></span></footer>
+</section>
+
+<!-- 9b. 另解：逐年逐月累加 -->
+<section class="slide">
+  <header><span class="kicker">另解 · 逐年逐月累加</span><span class="rule"></span></header>
+  <h2 class="title"><span class="no">做法</span>不换算，按整年整月累加</h2>
+  <div class="body">
+    <div class="steps">
+      <div class="step frag"><div class="st-body">先归一化：若 start 晚于 end，交换两者，最后取非负差即可。</div></div>
+      <div class="step frag"><div class="st-body">补足年份：当 \(y_1&lt;y_2\) 时，累加「从当前日期到当年 12 月 31 日」的天数，再把日期推进到下一年的 1 月 1 日。</div></div>
+      <div class="step frag"><div class="st-body">补足月份与天数：同一年内按整月累加（2 月看 isLeap 给 28/29），最后加 \(d_2-d_1\)。</div></div>
+    </div>
+    <div class="code">
+      <div class="code-bar">
+        <span class="dot" style="background:#ff5f57"></span>
+        <span class="dot" style="background:#febc2e"></span>
+        <span class="dot" style="background:#28c840"></span>
+        <span class="fname">yearmonth.cpp</span>
+      </div>
+      <pre><code class="cpp">// 若 start &gt; end，交换两者
+while (y1 &lt; y2) {              // 补足年份
+    days += daysToYearEnd(y1, m1, d1);
+    y1++; m1 = 1; d1 = 1;
+}
+while (m1 &lt; m2) {              // 补足月份
+    days += daysInMonth(y1, m1);   // 2 月按 isLeap 给 28/29
+    m1++;
+}
+days += d2 - d1;               // 补足天数</code></pre>
+    </div>
+    <div class="callout note frag">
+      <div class="co-title">复杂度与对比</div>
+      循环至多 3000 次（年份差）+ 12 次（月份差），仍然足够快；只用 isLeap 和每月天数，不用 cum 表、不用 floor 公式，不容易写错。下一页的换算解法把同样的循环用公式闭合到 \(O(1)\)。
+    </div>
+  </div>
+  <footer><span>计算概论A · 习题课</span><span></span></footer>
+</section>
+
+<!-- 10. 思路：日期换算 -->
+<section class="slide">
+  <header><span class="kicker">思路</span><span class="rule"></span></header>
+  <h2 class="title"><span class="no">做法</span>把日期换算成天数</h2>
+  <div class="body">
+    <div class="steps">
+      <div class="step frag"><div class="st-body">不逐日模拟。把每个日期换算成<b>从起点到该日期的总天数</b>，两个整数相减即为答案。</div></div>
+      <div class="step frag"><div class="st-body">总天数分三段：之前所有整年 + 当年之前的整月 + 当月的天。整年段用公式 \(365(y-1)+\left\lfloor\dfrac{y-1}{4}\right\rfloor-\left\lfloor\dfrac{y-1}{100}\right\rfloor+\left\lfloor\dfrac{y-1}{400}\right\rfloor\)——后三项合起来恰好是 \(1\) 到 \(y-1\) 年之间的闰年个数。</div></div>
+      <div class="step frag"><div class="st-body">整月段不用循环：非闰年的累计天数表 <code>cum[m]</code> 直接查；当年是闰年且月份超过 2 月，再补 1 天闰日。</div></div>
+      <div class="step frag"><div class="st-body">闰年判断只写一次，放进 <code>isLeap</code> 函数。</div></div>
+    </div>
+    <div class="callout idea frag">
+      <div class="co-title">例子：换算 2008-3-1</div>
+      整年 \(365\times2007+501-20+5=733041\)（后三项合为 486 个闰年），整月查表 \(cum[3]=59\)，当月加 1，闰年且已过 2 月再补 1：合计 \(733041+59+1+1=733102\)。
+    </div>
+    <div class="callout note frag">
+      <div class="co-title">复杂度</div>
+      两次换算各只有常数次算术运算和一次查表，是<b>严格的 \(O(1)\)</b>，且代价与两个日期的间隔无关。逐日模拟则要按间隔天数循环，间隔接近 3000 年时要跑约 110 万次，代码更长、更容易错。
+    </div>
+  </div>
+  <footer><span>计算概论A · 习题课</span><span></span></footer>
+</section>
+
+<!-- 11. 代码：完整实现 -->
+<section class="slide">
+  <header><span class="kicker">代码</span><span class="rule"></span></header>
+  <h2 class="title"><span class="no">代码</span>完整实现</h2>
+  <div class="body">
+    <div class="cols">
+      <div class="col-l">
+        <div class="code">
+          <div class="code-bar">
+            <span class="dot" style="background:#ff5f57"></span>
+            <span class="dot" style="background:#febc2e"></span>
+            <span class="dot" style="background:#28c840"></span>
+            <span class="fname">date.cpp</span>
+          </div>
+          <pre><code class="cpp">#include &lt;iostream&gt;
+#include &lt;cstdlib&gt;
+using namespace std;
+
+bool isLeap(int y) {                   // 闰年规则只写这一次
+    return (y % 4 == 0 &amp;&amp; y % 100 != 0) || (y % 400 == 0);
+}
+
+// cum[m] = 平年中第 m 月之前的天数；cum[0] 不用
+const int cum[13] =
+    {0, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334};
+
+// 把 y-m-d 换算成天数；只有差值有意义
+int toDays(int y, int m, int d) {
+    int y0 = y - 1;                    // 第 1 .. y-1 年都是完整的年份
+    int days = 365 * y0 + y0 / 4 - y0 / 100 + y0 / 400;
+    days += cum[m];                    // 第 m 月之前的整月
+    if (m &gt; 2 &amp;&amp; isLeap(y)) days++;     // 第 y 年的闰日已经过去
+    return days + d;                   // 当月内的天数
+}
+
+int main() {
+    int y1, m1, d1, y2, m2, d2;
+    cin &gt;&gt; y1 &gt;&gt; m1 &gt;&gt; d1;
+    cin &gt;&gt; y2 &gt;&gt; m2 &gt;&gt; d2;
+    int diff = toDays(y2, m2, d2) - toDays(y1, m1, d1);
+    cout &lt;&lt; abs(diff) &lt;&lt; endl;
+    return 0;
+}</code></pre>
+        </div>
+      </div>
+      <div class="col-r">
+        <div class="callout idea">
+          <div class="co-title">要点</div>
+          <ul>
+            <li>闰年规则只写一次（<code>isLeap</code>）</li>
+            <li><code>(m &gt; 2 &amp;&amp; isLeap(y))</code> 是 bool 运算，0/1 正好补闰日</li>
+            <li><code>abs</code>（在 <code>&lt;cstdlib&gt;</code> 中）保证答案非负</li>
+          </ul>
+        </div>
+        <div class="callout note">
+          <div class="co-title">运行结果</div>
+          <pre style="font-family:var(--mono);font-size:17px;margin-top:4px">输入  2008 1 1 / 2009 1 1
+输出  366</pre>
+        </div>
+        <div class="callout hint" style="font-size:14.5px;line-height:1.4;padding:6px 10px;margin:4px 0 0">
+          <b>统一度量</b>：日期换成「从纪元起的天数」= 放到均匀数轴。<br>
+          现实世界全在用这招：<br>
+          · Unix 时间戳：1970-01-01 起数秒<br>
+          · Excel 日期：本质是「从 1900-01-01 起的天数」序列号<br>
+          · 儒略日（Julian Day Number）：从公元前 4713 年起数天
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer><span>计算概论A · 习题课</span><span></span></footer>
+</section>
+
+<!-- ============ 第 4 题 ============ -->
+
+<!-- 12. 题目页（原始题干） -->
+<section class="slide">
+  <header><span class="kicker">题目</span><span class="rule"></span></header>
+  <div class="body">
+    <div class="problem-head">
+      <span class="p-no">第 4 题</span>
+      <span class="p-title">过河问题</span>
+    </div>
+    <div class="callout" style="border-color:var(--line);background:var(--bg-soft);font-size:18px;line-height:1.7">
+      <p><b>题目描述</b>　n个人想要过一条河,河上只有一条小船,这条船只能容纳两个人,因此这n个人想要全部过河的话就必须来回很多次.每个人划船的速度有所不同,两个人一起的时候船的速度是划得较慢的人的速度.请你找出一种策略使得他们在尽可能短的时间内过河.</p>
+      <p><b>关于输入</b>　第一行包括一个正整数t,表示有t组数据. 每组数据两行,第一行是人数n(n&lt;=1000),第二行是n个人各自过河所需的时间(不大于100).</p>
+      <p><b>关于输出</b>　输出最短时间</p>
+    </div>
+    <div class="io">
+      <div class="box">
+        <div class="io-title">例子输入</div>
+        <pre>1
+4
+1 2 5 10</pre>
+      </div>
+      <div class="box">
+        <div class="io-title">例子输出</div>
+        <pre>17</pre>
+      </div>
+    </div>
+    <div class="callout idea frag" style="font-size:16px;line-height:1.45;padding:10px 16px">
+      <div class="co-title" style="margin-bottom:3px">样例运输方案：1 2 5 10（共 17）</div>
+      ① 1、2 过河（2），1 划回（1）；② 5、10 同船过河（10），2 划回（2）；<br>
+      ③ 1、2 再同船过河（2），合计 \(2+1+10+2+2=17\)。
+    </div>
+  </div>
+  <footer><span>计算概论A · 习题课</span><span></span></footer>
+</section>
+
+<!-- 13. 分析：局面与归约 -->
+<section class="slide">
+  <header><span class="kicker">分析</span><span class="rule"></span></header>
+  <h2 class="title"><span class="no">思路</span>把问题化小</h2>
+  <div class="body">
+    <div class="steps">
+      <div class="step frag"><div class="st-body">船最终要留在对岸；每次空船划回来，都得靠<b>已经过河的人</b>——最快的人 1 充当「船夫」。</div></div>
+      <div class="step frag"><div class="st-body">每轮只决定一件事：<b>当前最慢的人</b>怎么送——具体就是下面这两种基本送法。</div></div>
+      <div class="step frag"><div class="st-body">送过去的人不再回来，剩下的局面与原问题结构相同，是同样的子问题，继续迭代。</div></div>
+      <div class="step frag"><div class="st-body">直到剩余 3 人以内，套不上上面的安排，单独处理边界。</div></div>
+    </div>
+    <div class="callout idea frag">
+      <div class="co-title">基本送法只有两种</div>
+      <b>「1」</b>——1 陪 \(a_j\) 过河、1 划回，净送一人，代价 \(a_1 + a_j\)；<br>
+      <b>「2」</b>——1、2 过河、1 划回，某两人同船过河、2 划回，净送两人，代价 \(a_1 + 2a_2 + (\text{同船较慢者})\)。
+    </div>
+  </div>
+  <footer><span>计算概论A · 习题课</span><span></span></footer>
+</section>
+
+<!-- 14. 分析：化归（三种开头） -->
+<section class="slide">
+  <header><span class="kicker">分析 · 化归</span><span class="rule"></span></header>
+  <h2 class="title"><span class="no">化归</span>只需比较「1+1」与「2」</h2>
+  <div class="body">
+    <p>处理最慢者时，开头的走法只有三种：<b>「1+1」</b>——\(a_m\)、\(a_{m-1}\) 各由送法「1」送走；<br>
+      <b>「2」</b>——\(a_m\)、\(a_{m-1}\) 由送法「2」同船送走；<br>
+      <b>「1+2」</b>——先「1」送 \(a_m\)，再「2」送 \(a_{m-1}\)、\(a_{m-2}\)。</p>
+    <div class="steps">
+      <div class="step frag"><div class="st-body"><b>「1+2」不优于「2+1」</b>：两者送走同样三人（\(a_m\)、\(a_{m-1}\)、\(a_{m-2}\)），此后同样剩 \(a_1, \dots, a_{m-3}\)、船在左岸，记最优后续为 \(T'\)。代价分别为\[(a_1 + a_m) + (a_1 + 2a_2 + a_{m-1}) + T' \quad\text{与}\quad (a_1 + 2a_2 + a_m) + (a_1 + a_{m-2}) + T',\]相减之差为 \(a_{m-1} - a_{m-2} \ge 0\)。</div></div>
+      <div class="step frag"><div class="st-body"><b>「2+1」不优于「2」</b>：「2+1」是先走「2」、再以「1」送 \(a_{m-2}\) 并续走 \(T'\)——这整段续走是「2」之后局面的一种合法走法，不优于该局面的最优续走 \(T\)。故「2+1」的总代价 \(\ge\) 「2」\(+\,T\)。</div></div>
+      <div class="step frag"><div class="st-body">合起来：任何「1+2」开头的方案，总代价都不低于某个「2」开头的方案。<br><b>问题化为只需比较「1+1」与「2」</b>——两者送走最慢两人后剩余局面完全相同（剩 \(a_1, \dots, a_{m-2}\)、船在左岸）。<br>两式相减：<span style="background:#fff3c4;border-radius:4px;padding:0 2px;color:var(--pku-red-dark)">\(C_1 - C_2 = (2a_1 + a_{m-1} + a_m) - (a_1 + 2a_2 + a_m) = a_1 + a_{m-1} - 2a_2\)</span>：\(\le 0\) 取「1+1」，否则取「2」。</div></div>
+    </div>
+  </div>
+  <footer><span>计算概论A · 习题课</span><span></span></footer>
+</section>
+
+<!-- 16. 边界 -->
+<section class="slide">
+  <header><span class="kicker">分析</span><span class="rule"></span></header>
+  <h2 class="title"><span class="no">边界</span>剩余 3 人以内，逐情况推导</h2>
+  <div class="body">
+    <div class="steps">
+      <div class="step frag"><div class="st-body"><b>剩 3 人</b>（\(a \le b \le c\)）：按两类走法比较。<br>
+        <b>分别送</b>：1 陪 \(c\) 过河、1 返回（\(c+a\)），此时剩 2 人，直接同船过河（\(b\)），合计 \(a+b+c\)——第二次返回不必要，因为左岸只剩 1 人。<br>
+        <b>同船送</b>：1、2 过河（\(b\)）、1 返回（\(a\)）、\(b\) 与 \(c\) 同船过河（\(c\)）、2 返回（\(b\)）、最后 1 人过河（\(a\)），合计 \(2a+2b+c\)。因 \(a+b \le 2a+2b\) 恒成立，分别送恒不劣于同船送。</div></div>
+      <div class="step frag"><div class="st-body">故剩 3 人时必取分别送，合计代价 \(a+b+c\)。<br>
+        <b>剩 2 人</b>：一起过河，代价 \(b\)。<br>
+        <b>剩 1 人</b>：直接过河，代价 \(a\)。</div></div>
+    </div>
+    <div class="callout note frag">
+      <div class="co-title">迭代结构</div>
+      每轮按决策规则送走一人或两人，m 相应减 1 或减 2；循环条件 <code>m &gt; 3</code>，退出时只剩 3/2/1 人，各写一个分支。排序 \(O(n\log n)\) 是主要开销，决策循环最多 n 次。
+    </div>
+  </div>
+  <footer><span>计算概论A · 习题课</span><span></span></footer>
+</section>
+
+<!-- 17. 代码：完整实现 -->
+<section class="slide">
+  <header><span class="kicker">代码</span><span class="rule"></span></header>
+  <h2 class="title"><span class="no">代码</span>完整实现</h2>
+  <div class="body">
+    <div class="cols">
+      <div class="col-l">
+        <div class="code">
+          <div class="code-bar">
+            <span class="dot" style="background:#ff5f57"></span>
+            <span class="dot" style="background:#febc2e"></span>
+            <span class="dot" style="background:#28c840"></span>
+            <span class="fname">cross.cpp</span>
+          </div>
+          <pre><code class="cpp">#include &lt;iostream&gt;
+#include &lt;algorithm&gt;
+using namespace std;
+
+int main() {
+    int t;
+    cin &gt;&gt; t;
+    while (t--) {
+        int n, a[1001];
+        cin &gt;&gt; n;
+        for (int i = 1; i &lt;= n; i++) cin &gt;&gt; a[i];
+        sort(a + 1, a + n + 1);        // 现在 a[1] 最快
+
+        int total = 0;
+        int m = n;                     // 尚未送过去的人数
+        while (m &gt; 3) {
+            if (a[m - 1] + a[1] &gt; 2 * a[2]) {
+                // 送次慢者代价更大：让最慢两人同船
+                total += a[m] + a[1] + 2 * a[2];
+                m -= 2;
+            } else {
+                // 最快者陪最慢者过河，再独自划回
+                total += a[m] + a[1];
+                m -= 1;
+            }
+        }
+        if (m == 3)      total += a[1] + a[2] + a[3];
+        else if (m == 2) total += a[2];
+        else             total += a[1];
+        cout &lt;&lt; total &lt;&lt; endl;
+    }
+    return 0;
+}</code></pre>
+        </div>
+      </div>
+      <div class="col-r">
+        <div class="callout idea">
+          <div class="co-title">要点</div>
+          <ul>
+            <li>下标 1..n 排序写 <code>sort(a+1, a+n+1)</code>；之后「下标越小越快」，公式才成立</li>
+            <li>if 分支对应「同船送走两人」，else 分支对应「1 陪最慢者往返」，与决策规则一一对应</li>
+            <li>n 最大 1000、时间最大 100，int 不会溢出</li>
+            <li><b>头文件</b>：<code>sort</code> 在 <code>&lt;algorithm&gt;</code>，<code>abs</code> 在 <code>&lt;cstdlib&gt;</code>，<code>memset</code> 在 <code>&lt;cstring&gt;</code>——别的库函数同理</li>
+          </ul>
+        </div>
+        <div class="callout note">
+          <div class="co-title">运行结果</div>
+          <pre style="font-family:var(--mono);font-size:17px;margin-top:4px">输入  1 2 5 10
+输出  17</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer><span>计算概论A · 习题课</span><span></span></footer>
+</section>
+
+<!-- 18. 另解：动态规划（状态与转移） -->
+<section class="slide">
+  <header><span class="kicker">另解 · 动态规划</span><span class="rule"></span></header>
+  <h2 class="title"><span class="no">DP</span>状态与转移</h2>
+  <div class="body">
+    <p>排序后记 \(f[i]\)：<b>前 \(i\) 快的人全部过河、船停在右岸</b>的最短时间。边界 \(f[1]=a_1\)，\(f[2]=a_2\)，\(f[3]=a_1+a_2+a_3\)，递推自 \(i=4\) 起（见「边界」页）。</p>
+    <div class="steps">
+      <div class="step frag"><div class="st-body">转移只须考察「\(i\) 最终过河的那次航行」：由化归，只有两种送法——1 陪同单独送，或与 \(i-1\) 同船（「1+2」已排除）。</div></div>
+      <div class="step frag"><div class="st-body"><b>1 陪 \(i\) 过河</b>：先让前 \(i-1\) 人过河（\(f[i-1]\)，船在右岸），1 划回（\(a_1\)），陪 \(i\) 过河（\(a_i\)）。候选一：<span style="background:#fff3c4;border-radius:4px;padding:0 1px;color:var(--pku-red-dark)">\(f[i-1] + a_1 + a_i\)</span></div></div>
+      <div class="step frag"><div class="st-body"><b>\(i-1\) 与 \(i\) 同船过河</b>：先让前 \(i-2\) 人过河（\(f[i-2]\)），1 划回（\(a_1\)），\(i-1\) 与 \(i\) 同船过河（\(a_i\)），2 划回接 1、再同船过河（\(2a_2\)）。候选二：<span style="background:#fff3c4;border-radius:4px;padding:0 1px;color:var(--pku-red-dark)">\(f[i-2] + a_1 + 2a_2 + a_i\)</span>。</div></div>
+      <div class="step frag"><div class="st-body">两种候选的<b>剩余局面都是同结构的子问题</b>，最优子结构成立（每步取哪个由数据决定，不必事先推出比较规则）：\[f[i] = \min\big(f[i-1] + a_1 + a_i,\ f[i-2] + a_1 + 2a_2 + a_i\big).\]</div></div>
+    </div>
+    <div class="callout idea frag" style="font-size:16px;line-height:1.5;padding:10px 16px">
+      <div class="co-title" style="margin-bottom:2px">DP 的一般思路</div>
+      <b>定状态</b>：找到唯一决定后续局面的量（这里 \(f[i]\) 还隐含「船在右岸」）；<b>找转移</b>：只看最后一步，化为更小的同结构子问题；<b>定边界</b>：最小局面直接给出；<b>递推</b>：从小到大填表，答案取 \(f[n]\)。
+    </div>
+  </div>
+  <footer><span>计算概论A · 习题课</span><span></span></footer>
+</section>
+
+<!-- 19. 另解：动态规划（代码） -->
+<section class="slide">
+  <header><span class="kicker">另解 · 动态规划</span><span class="rule"></span></header>
+  <h2 class="title"><span class="no">代码</span>递推实现</h2>
+  <div class="body">
+    <div class="cols">
+      <div class="col-l">
+        <div class="code">
+          <div class="code-bar">
+            <span class="dot" style="background:#ff5f57"></span>
+            <span class="dot" style="background:#febc2e"></span>
+            <span class="dot" style="background:#28c840"></span>
+            <span class="fname">dp.cpp</span>
+          </div>
+          <pre><code class="cpp">#include &lt;iostream&gt;
+#include &lt;algorithm&gt;
+using namespace std;
+int main() {
+    int t; cin &gt;&gt; t;
+    while (t--) {
+        int n, a[1001] = {};
+        cin &gt;&gt; n;
+        for (int i = 1; i &lt;= n; i++) cin &gt;&gt; a[i];
+        sort(a + 1, a + n + 1);      // 现在 a[1] 最快
+        long long f[1001] = {0, a[1], a[2], a[1] + a[2] + a[3]};
+        for (int i = 4; i &lt;= n; i++)   // f[1..3] 是边界情况
+            // 最快者陪 i 过河，或 i-1 与 i 同船过河
+            f[i] = min(f[i - 1] + a[1] + a[i],
+                       f[i - 2] + a[1] + 2 * a[2] + a[i]);
+        cout &lt;&lt; f[n] &lt;&lt; endl;
+    }
+    return 0;
+}</code></pre>
+        </div>
+      </div>
+      <div class="col-r">
+        <div class="callout idea">
+          <div class="co-title">要点</div>
+          <ul>
+            <li>状态 \(f[i]\)（前 \(i\) 快、船在右岸）必须先写明，转移才有着落</li>
+            <li>两个候选正是决策规则的两种送法：\(f[i-1] + a_1 + a_i\) = 分别送，\(f[i-2] + a_1 + 2a_2 + a_i\) = 同船送；取 \(\min\) 代替比较条件的推导</li>
+            <li>边界 \(f[1..3]\) 直接给出，递推自 \(i = 4\) 起：「2」的论证要求 \(m \ge 4\)，\(i = 3\) 不能套递推</li>
+          </ul>
+        </div>
+        <div class="callout note">
+          <div class="co-title">运行结果</div>
+          <pre style="font-family:var(--mono);font-size:17px;margin-top:4px">输入  1 2 5 10
+输出  17</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer><span>计算概论A · 习题课</span><span></span></footer>
+</section>
+
+<!-- ============ 第 5 题 ============ -->
+
+<!-- 25. 题目页（原始题干） -->
+<section class="slide">
+  <header style="margin-bottom:12px"><span class="kicker">题目</span><span class="rule"></span><span class="symbox">来源：24年期中压轴</span></header>
+  <div class="body">
+    <div class="problem-head">
+      <span class="p-no">第 5 题</span>
+      <span class="p-title">炸鸡排</span>
+    </div>
+    <div class="callout" style="border-color:var(--line);background:var(--bg-soft);font-size:17px;line-height:1.65">
+      <p><b>题目描述</b>　小P买了n块鸡排，想将它们做成美味的炸鸡排，其中第i块鸡排需要t[i]秒炸熟。小P只有一个炸锅，炸锅内可以放置k(k≤n)块鸡排。小P是个完美主义者，他要求任意时刻炸锅内必须恰有k块鸡排。他可以在任意时刻改变锅内正在炸的鸡排，只需保证已经熟了的鸡排不能继续留在锅中。小P希望知道炸鸡排最多可以持续多少时间。</p>
+      <p>例如，小P的三块鸡排需要分别需要1,1,1的时间炸熟，炸锅内需要放置2块鸡排，那么他决定在第一个0.5秒炸1和2两块鸡排，第二个0.5秒炸2和3两块鸡排，第三个0.5秒炸1和3两块鸡排，共持续了1.5秒。</p>
+      <p><b>关于输入</b>　第一行输入两个正整数n和k，k≤n。第二行输入n个正整数，代表n块鸡排分别需要炸熟的时间t[1],t[2]...t[n]。输入数据保证，n≤1000，0＜t[i]≤1000000。</p>
+      <p><b>关于输出</b>　输出一个双精度浮点数，代表炸鸡排最多可以持续的时间，结果保留三位小数。</p>
+    </div>
+    <div class="io" style="margin:12px 0 4px">
+      <div class="box">
+        <div class="io-title">例子输入</div>
+        <pre>4 2
+5 1 1 2</pre>
+      </div>
+      <div class="box">
+        <div class="io-title">例子输出</div>
+        <pre>4.000</pre>
+      </div>
+      <div class="box frag">
+        <div class="io-title">怎么炸（共 4 秒）</div>
+        <pre style="font-size:16px;line-height:1.4">0-1 秒：炸 5 和 1（1 熟）
+1-2 秒：炸 5 和 1（1 熟）
+2-4 秒：炸 5 和 2（2 熟）
+5 的那块只炸 4 秒，不必熟</pre>
+        <div style="font-size:14px;line-height:1.4;padding:6px 16px;background:#fdeeee;color:#c62f2f">注意审题：目标是持续最久，不是全部炸熟！</div>
+      </div>
+    </div>
+  </div>
+  <footer><span>计算概论A · 习题课</span><span></span></footer>
+</section>
+
+<!-- 26b. 观察：可行条件 -->
+<!-- 27. 解法一：模拟（思路） -->
+<section class="slide">
+  <header><span class="kicker">解法一 · 模拟</span><span class="rule"></span></header>
+  <h2 class="title"><span class="no">思路</span>按题意直接模拟炸的过程</h2>
+  <div class="body">
+    <div class="steps">
+      <div class="step frag"><div class="st-body">锅内始终放「剩余炸制时间最长」的 \(k\) 块——直译题意，就是反复取当前最慢的 \(k\) 块下锅，熟一块换一块。</div></div>
+      <div class="step frag"><div class="st-body">关键：边界处若有并列（剩余时间相同），锅位要在它们之间<b>轮流</b>、它们<b>同时出锅</b>——必须作为一个整体（<b>并列段</b>）来算。</div></div>
+      <div class="step frag"><div class="st-body">排序后，锅里固定是最慢的 \(k\) 块；锅位边界 \(B=n-k+1\) 若切在一组剩余时间相同的鸡排中间（\(t[l]=\cdots=t[r]\)，\(l\le B\le r\)），称 \([l,r]\) 为<b>并列段</b>：大小 \(sz=r-l+1\)，其中<b>在锅里</b> \(p=r-B+1\) 块、锅外等待 \(w=sz-p\) 块。<br>锅位在段内轮流换，段里每块只按 \(p/sz\) 变熟。下一步只有四种：段<b>追平 \(t[l-1]\)</b>（汇合）、\(t[r+1]\) <b>追平段</b>（拉平）、<b>段整体炸熟</b>、右边更慢者<b>先熟</b>——各算时间，取最先发生。<div style="font-size:16px;line-height:1.45;background:var(--bg-soft);border:1px solid var(--line);border-radius:8px;padding:8px 14px;margin-top:6px"><b>用样例走一遍（4 2 / 5 1 1 2）</b>：初始排序 [1,1,2,5]，B=3，锅里是 {2,5}，边界块 2 无并列，段=[3,3]，p=1。<br>事件时间：汇合 \((2-1)\cdot 1/1=1\)；拉平 \(\infty\)；段熟 2；右块熟 5 → 汇合先发生，执行 1 秒。<br>t=1：状态变 [1,1,1,4]（2 烧成 1、5 烧成 4），段=[1,3]（三个 1），p=1、sz=3。<br>事件时间：汇合 \((1-0)\cdot 3=3\)；拉平 \((4-1)\cdot 3/2=4.5\)；段熟 3；右块熟 4 → 段熟先发生，执行 3 秒：三个 1 全熟出锅，剩 n=1&lt;k=2，结束。<br>ans = \(2\times1+2\times3=8\) 锅·秒 → \(8/2=4.000\) ✓。对应时间表 [0,1] 炸 {2,5}，[1,4] 炸 {4, 三个 1 轮流}（第 25 页「怎么炸」是另一种合法方案）。</div></div></div>
+      <div class="step frag"><div class="st-body">有鸡排出锅就将其移出序列；若某次出锅后未熟的鸡排不足 \(k\) 块，过程立即结束。<code>ans</code> 按「锅·秒」累计，除以 \(k\) 即持续时间。</div></div>
+    </div>
+  </div>
+  <footer><span>计算概论A · 习题课</span><span></span></footer>
+</section>
+
+<!-- 28. 解法一：模拟（代码） -->
+<section class="slide">
+  <header><span class="kicker">解法一 · 模拟</span><span class="rule"></span></header>
+  <h2 class="title"><span class="no">代码</span>按题意模拟的完整实现</h2>
+  <div class="body">
+    <div class="cols">
+      <div class="col-l">
+        <div class="code">
+          <div class="code-bar">
+            <span class="dot" style="background:#ff5f57"></span>
+            <span class="dot" style="background:#febc2e"></span>
+            <span class="dot" style="background:#28c840"></span>
+            <span class="fname">sim.cpp</span>
+          </div>
+          <pre><code class="cpp">#include &lt;iostream&gt;
+#include &lt;algorithm&gt;
+#include &lt;iomanip&gt;
+using namespace std;
+
+int n, k;
+long double t[2001];   // 排序后的剩余时间；t[0] 恒为 0，用作哨兵
+long double ans;       // 累计锅位占用（单位：鸡排·秒）
+
+int main() {
+    cin &gt;&gt; n &gt;&gt; k;
+    for (int i = 1; i &lt;= n; i++) cin &gt;&gt; t[i];
+    sort(t + 1, t + n + 1);
+    if (n == k) {                    // 全部都能下锅：最快的一块炸熟即结束
+        cout &lt;&lt; fixed &lt;&lt; setprecision(3) &lt;&lt; t[1] &lt;&lt; endl;
+        return 0;
+    }
+
+    const long double INF = 1e30L;
+    int l = n - k + 1, r = n - k + 1;  // [l, r]：锅位边界上的并列段
+    while (l &gt; 0 &amp;&amp; t[l] == t[l - 1]) l--;
+    while (r &lt; n &amp;&amp; t[r] == t[r + 1]) r++;
+
+    while (true) {
+        int B = n - k + 1;                 // 最左边的锅位
+        int sz = r - l + 1;                // 并列段大小
+        int p = r - (l &gt; B ? l : B) + 1;   // 并列段中当前在锅里的块数
+        int w = sz - p;                    // 并列段中在锅外等待的块数
+        long double b = t[r];              // 并列段共同的剩余时间
+
+        // 从当前状态到四个候选事件所需的时间
+        long double dMerge = (B &gt;= l) ? (b - t[l - 1]) * sz / p : INF;
+        long double dLevel = (r &lt; n &amp;&amp; w &gt; 0) ? (t[r + 1] - b) * sz / w : INF;
+        long double dBlock = b * sz / p;   // 并列段整体炸熟
+        long double dDone  = (r &lt; n) ? t[r + 1] : INF;
+        if (B &lt; l) dDone = min(dDone, t[B]);  // 更快的鸡排进了锅
+
+        long double dt = min(min(dMerge, dLevel), min(dBlock, dDone));
+
+        if (dt &gt;= dBlock || dt &gt;= dDone) {
+            // 有鸡排先熟：先炸 dt，再移出所有已熟的鸡排
+            ans += (long double)k * dt;
+            for (int i = l; i &lt;= r; i++) t[i] -= dt * p / sz;  // 炸制时间在段内均匀分摊
+            for (int i = r + 1; i &lt;= n; i++) t[i] -= dt;
+            for (int i = B; i &lt; l; i++) t[i] -= dt;            // 锅里更快的鸡排
+            int m = 0;
+            for (int i = 1; i &lt;= n; i++) {
+                if (t[i] &lt;= 1e-12L) { m++; continue; }         // 已熟：出锅
+                t[i - m] = t[i];
+            }
+            n -= m;
+            if (n &lt; k) break;              // 锅已装不满：过程结束
+            l = r = n - k + 1;             // 在新边界上重建并列段
+        } else if (dt &gt;= dLevel) {
+            // 并列段先与 t[r+1] 拉平：向右扩展
+            ans += (long double)k * dt;
+            for (int i = l; i &lt;= r; i++) t[i] -= dt * p / sz;
+            for (int i = r + 1; i &lt;= n; i++) t[i] -= dt;
+            r++;
+        } else {
+            // 并列段先与 t[l-1] 汇合
+            ans += (long double)k * dt;
+            for (int i = l; i &lt;= r; i++) t[i] -= dt * p / sz;
+            for (int i = r + 1; i &lt;= n; i++) t[i] -= dt;
+            l--;
+        }
+        while (l &gt; 0 &amp;&amp; t[l] == t[l - 1]) l--;
+        while (r &lt; n &amp;&amp; t[r] == t[r + 1]) r++;
+    }
+    cout &lt;&lt; fixed &lt;&lt; setprecision(3) &lt;&lt; ans / k &lt;&lt; endl;
+    return 0;
+}</code></pre>
+        </div>
+      </div>
+      <div class="col-r">
+        <div class="callout idea">
+          <div class="co-title">要点</div>
+          <ul>
+            <li>并列段 \([l, r]\) 与锅位边界 \(B = n-k+1\)：段内 \(p\) 块入锅、\(w\) 块等待，油时按 <code>p/(r-l+1)</code> 的速率平分</li>
+            <li>每步取最先事件：汇合 dMerge、拉平 dLevel、并列段熟 dBlock、慢块熟 dDone</li>
+            <li>出锅后把炸熟的移出序列；不足 \(k\) 块则结束，否则令 <code>l = r = B</code> 重建并列段</li>
+            <li><code>n == k</code> 时全部下锅，最快的熟了就结束</li>
+          </ul>
+        </div>
+        <div class="callout note">
+          <div class="co-title">运行结果</div>
+          <pre style="font-family:var(--mono);font-size:17px;margin-top:4px">输入  4 2 / 5 1 1 2
+输出  4.000</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer><span>计算概论A · 习题课</span><span></span></footer>
+</section>
+
+<section class="slide">
+  <header><span class="kicker">解法二 · 观察</span><span class="rule"></span><div class="symbox"><div>\(T\)：拟持续的时长（\(T'\) 为任意候选）</div><div>\(t_i\)：第 \(i\) 块鸡排炸熟所需时间</div><div>\(k\)：锅位数（锅内恒定鸡排数）</div><div>\(n\)：鸡排总数</div></div></header>
+  <h2 class="title"><span class="no">可行条件</span>持续 \(T\) 秒意味着什么</h2>
+  <div class="body">
+    <div class="steps">
+      <div class="step frag"><div class="st-body"><b>总占用</b>：任意时刻锅中恰有 \(k\) 块，持续 \(T\) 秒就需要恰好 \(kT\) 个「鸡排·秒」。</div></div>
+      <div class="step frag"><div class="st-body"><b>总供给</b>：第 \(i\) 块鸡排至多贡献 \(\min(t_i,\,T)\) 秒：炸满 \(t_i\) 必须出锅，\(T\) 秒内在锅里至多待 \(T\) 秒。</div></div>
+      <div class="step frag"><div class="st-body">所以 \(T\) 可行，当且仅当 \(\displaystyle\sum_{i=1}^{n}\min(t_i,\,T)\ \ge\ kT\)：总供给要撑得起总占用。</div></div>
+    </div>
+    <div class="callout note frag">
+      <div class="co-title">样例验证（n = 4，k = 2，t = 5 1 1 2）</div>
+      \(T=4\)：\(\min(t_i,4)\) 之和 \(= 4+1+1+2 = 8 \ge 2\times4 = 8\)，可行；<br>
+      \(T=4.5\)：\(\min(t_i,4.5)\) 之和 \(= 4.5+1+1+2 = 8.5 \lt 9\)，不可行。最大持续时间就是 \(4\)。
+    </div>
+  </div>
+  <footer><span>计算概论A · 习题课</span><span></span></footer>
+</section>
+
+<!-- 29c. 算法 -->
+<section class="slide">
+  <header><span class="kicker">解法二 · 算法</span><span class="rule"></span><div class="symbox"><div>\(t\)：每块鸡排炸熟所需时间（升序）</div><div>\(s\)：当前鸡排时间总和 \(\sum t\)</div><div>\(k\)：当前锅位数（随删除递减）</div><div>\(n\)：当前剩余鸡排数</div><div>\(\bar t\)：平均占用 \(s/k\)</div><div>\(T^{*}\)：答案，最长持续时间</div></div></header>
+  <h2 class="title"><span class="no">做法</span>去掉拖后腿的</h2>
+  <div class="body">
+    <p>把 \(t\) 升序排序，记当前平均占用为 \(\bar{t}=\dfrac{\sum_i t_i}{k}\)，考察最大者 \(t_n\)：</p>
+    <div class="steps">
+      <div class="step frag"><div class="st-body">若 \(t_n > \bar{t}\)：这块鸡排即使最优也炸不熟，只能全程占住一个锅位——把它连同它的一个锅位一起去掉，答案不变。</div></div>
+      <div class="step frag"><div class="st-body">若 \(t_n \le \bar{t}\)：所有鸡排都能在最优时长内「用得完」，答案就是 \(\bar{t}\)。</div></div>
+      <div class="step frag"><div class="st-body">删除会改变平均值，所以循环判断：只要 \(t_n > \dfrac{\sum}{k}\) 就继续删，直到条件不成立。</div></div>
+    </div>
+    <div class="callout idea frag">
+      <div class="co-title">结论</div>
+      循环结束时剩余 \(n'\) 块、总和 \(s'\)，答案是 \(T^{*}=\dfrac{s'}{k'}\)。正确性归结为后面两页证明的一个引理。
+    </div>
+  </div>
+  <footer><span>计算概论A · 习题课</span><span></span></footer>
+</section>
+
+<!-- 证明：可行性引理（构造） -->
+<section class="slide">
+  <header style="margin-bottom:8px"><span class="kicker">解法二 · 证明 · 引理</span><span class="rule"></span><div class="symbox"><div>\(t_i\)：第 \(i\) 块鸡排炸熟所需时间</div><div>\(s\)：全部 \(t_i\) 的总和</div><div>\(k\)：锅位数</div><div>\(T\)：目标时长 \(s/k\)（\(T'\) 为任意候选）</div><div>\(n\)：鸡排总数</div><div>\(c_i\)：鸡排 \(i\) 在数轴上的起点</div><div>\(j\)：锅位编号（从 0 起）</div><div>\(\tau\)：锅位内的时刻（\(0\le\tau<T\)）</div></div></header>
+  <h2 class="title"><span class="no">引理</span>每块 \(t_i \le \dfrac{s}{k}\) 时，持续 \(\dfrac{s}{k}\) 秒可以做到</h2>
+  <div class="body">
+    <p>设 \(k \le n\)，每块 \(t_i \le T=\dfrac{s}{k}\)（\(s=\sum_i t_i\)）。上界显然：持续 \(T'\) 秒需要 \(kT'\) 个「锅·秒」，全部鸡排至多提供 \(\sum_i \min(t_i,T')\) 个，故 \(T'=\dfrac{s}{k}\) 已到顶；下面只证<b>可行性</b>——这些鸡排真的能在 \(T\) 秒内全部炸完。</p>
+    <div class="steps">
+      <div class="step frag"><div class="st-body">鸡排任意排成一列、首尾相接铺在数轴上，恰好占满 \([0,s)\)：鸡排 \(i\) 占 \([c_i,\,c_i+t_i)\)（\(t_i\) 秒允许拆成几段完成）。</div></div>
+      <div class="step frag"><div class="st-body">对折：由 \(s=kT\) 按长度 \(T\) 切成 \(k\) 段，第 \(j\) 段折作锅位 \(j\)，时刻 \(\tau\) 炸「线位置 \(jT+\tau\)」处的那一块。</div></div>
+      <div class="step frag"><div class="st-body">于是 \([0,T]\) 内每时刻每锅位各炸一块、共 \(k\) 块；合法性见下一页验证。</div></div>
+    </div>
+    <div class="frag" style="margin-top:2px">
+      <svg viewBox="0 0 1136 136" width="900" style="display:block">
+        <text x="30" y="10" font-size="12" fill="#5b6470">把所有鸡排首尾相接铺在数轴上（s = 6）</text>
+        <rect x="30" y="16" width="180" height="30" fill="#dbe7fd" stroke="#7fa8e8"/>
+        <text x="120" y="35" font-size="13" text-anchor="middle" fill="#1f2329">鸡排1（1秒）</text>
+        <rect x="210" y="16" width="540" height="30" fill="#fdeecd" stroke="#e0b45c"/>
+        <text x="480" y="35" font-size="13" text-anchor="middle" fill="#1f2329">鸡排2（3秒）</text>
+        <rect x="750" y="16" width="360" height="30" fill="#d8f0e1" stroke="#7cc49a"/>
+        <text x="930" y="35" font-size="13" text-anchor="middle" fill="#1f2329">鸡排3（2秒）</text>
+        <text x="30" y="60" font-size="11" fill="#9aa3ad">0</text>
+        <text x="210" y="60" font-size="11" fill="#9aa3ad" text-anchor="middle">1</text>
+        <text x="390" y="60" font-size="11" fill="#9aa3ad" text-anchor="middle">2</text>
+        <text x="570" y="60" font-size="11" fill="#9aa3ad" text-anchor="middle">3</text>
+        <text x="750" y="60" font-size="11" fill="#9aa3ad" text-anchor="middle">4</text>
+        <text x="930" y="60" font-size="11" fill="#9aa3ad" text-anchor="middle">5</text>
+        <text x="1110" y="60" font-size="11" fill="#9aa3ad" text-anchor="middle">6</text>
+        <line x1="570" y1="12" x2="570" y2="112" stroke="#a6192e" stroke-dasharray="4 3"/>
+        <text x="578" y="26" font-size="12" fill="#a6192e">折痕 T=3，对折成 2 个锅位</text>
+        <text x="30" y="74" font-size="12" fill="#1f2329">锅位 0（时刻 τ：0 → 3）</text>
+        <rect x="30" y="80" width="180" height="26" fill="#dbe7fd" stroke="#7fa8e8"/>
+        <text x="120" y="97" font-size="12" text-anchor="middle" fill="#1f2329">鸡排1</text>
+        <rect x="210" y="80" width="360" height="26" fill="#fdeecd" stroke="#e0b45c"/>
+        <text x="390" y="97" font-size="12" text-anchor="middle" fill="#1f2329">鸡排2 前段</text>
+        <text x="570" y="74" font-size="12" fill="#1f2329">锅位 1（时刻 τ：0 → 3）</text>
+        <rect x="570" y="80" width="180" height="26" fill="#fdeecd" stroke="#e0b45c"/>
+        <text x="660" y="97" font-size="12" text-anchor="middle" fill="#1f2329">鸡排2 后段</text>
+        <rect x="750" y="80" width="360" height="26" fill="#d8f0e1" stroke="#7cc49a"/>
+        <text x="930" y="97" font-size="12" text-anchor="middle" fill="#1f2329">鸡排3</text>
+        <text x="568" y="126" font-size="13" text-anchor="middle" fill="#7d0f20">鸡排 2 跨过折痕：锅位 0 里炸 τ∈[1,3)，锅位 1 里炸 τ∈[0,1)——两段时间不重叠，合法性见下一页</text>
+      </svg>
+    </div>
+  </div>
+  <footer><span>计算概论A · 习题课</span><span></span></footer>
+</section>
+
+<!-- 证明：可行性引理（验证与结论） -->
+<!-- 31. 证明：可行性引理（验证与结论） -->
+<section class="slide">
+  <header style="margin-bottom:8px"><span class="kicker">解法二 · 证明 · 引理</span><span class="rule"></span><div class="symbox"><div>\(T\)：目标时长 \(s/k\)</div><div>\(t_i\)：第 \(i\) 块鸡排炸熟所需时间</div><div>\(s\)：全部 \(t_i\) 的总和</div><div>\(k\)：锅位数</div><div>\(c_i\)：鸡排 \(i\) 在数轴上的起点</div><div>\(j\)：锅位编号（从 0 起）</div><div>\(\tau\)：锅位内的时刻</div></div></header>
+  <h2 class="title"><span class="no">验证</span>构造的方案满足题设的三个要求</h2>
+  <div class="body">
+    <div class="steps">
+      <div class="step frag"><div class="st-body"><b>① 任意时刻恰有 \(k\) 块</b>：对应 \((j,\tau)\mapsto jT+\tau\) 是 \([0,kT)\) 的一一表示，故每时刻每锅位恰好一块，共 \(k\) 块。</div></div>
+      <div class="step frag"><div class="st-body"><b>② 每块恰好炸满 \(t_i\) 秒</b>：鸡排 \(i\) 在锅中的时刻恰是扫过 \([c_i,\,c_i+t_i)\) 的时刻，总长 \(=t_i\)——没扫完不会提前出锅，扫完不再出现。</div></div>
+      <div class="step frag"><div class="st-body"><b>③ 同一块不同时占两个锅位</b>：因 \(t_i\le T\)，区间至多跨一条折痕。跨折痕时两段时刻是 \([0,\tau_1)\)、\([\tau_2,T)\)，而 \(\tau_1\le\tau_2\iff t_i\le T\)——正是前提，两段不重叠。反之 \(t_i>T\) 时同一块会同时占两个锅位，非法：<b>条件 \(t_i\le T\) 不可少</b>。</div></div>
+    </div>
+    <div class="callout note frag">
+      <div class="co-title">结论</div>
+      引理成立：\(t_i \le \dfrac{s}{k}\) 时可恰好持续 \(\dfrac{s}{k}\) 秒。循环删除后剩余鸡排对剩余锅位 \(k'\) 满足引理条件，故 \(T^{*}=\dfrac{s'}{k'}\) 可达；又不超过上界，故最优。
+    </div>
+  </div>
+  <footer><span>计算概论A · 习题课</span><span></span></footer>
+</section>
+
+<!-- 30. 证明：可行性引理（构造） -->
+
+<!-- 32. 代码 -->
+<section class="slide">
+  <header><span class="kicker">代码</span><span class="rule"></span></header>
+  <h2 class="title"><span class="no">代码</span>完整实现</h2>
+  <div class="body">
+    <div class="cols">
+      <div class="col-l">
+        <div class="code">
+          <div class="code-bar">
+            <span class="dot" style="background:#ff5f57"></span>
+            <span class="dot" style="background:#febc2e"></span>
+            <span class="dot" style="background:#28c840"></span>
+            <span class="fname">fry.cpp</span>
+          </div>
+          <pre><code class="cpp">#include &lt;iostream&gt;
+#include &lt;iomanip&gt;
+#include &lt;algorithm&gt;
+using namespace std;
+
+// 贪心：反复删掉「超过平均占用 sum/k」的最大块（连同它的锅位）
+// 删完后剩余鸡排都能在 sum/k 秒内用完（引理），答案 = 剩余总和 ÷ 剩余锅位
+int main() {
+    int n, k;
+    cin &gt;&gt; n &gt;&gt; k;
+    int t[1005];
+    for (int i = 1; i &lt;= n; i++) cin &gt;&gt; t[i];
+    sort(t + 1, t + n + 1);            // 升序排序：t[n] 是当前最大的一块
+
+    double sum = 0;                    // 当前所有鸡排的时间总和
+    for (int i = 1; i &lt;= n; i++) sum += t[i];
+    while (n &gt; 1 &amp;&amp; t[n] * k &gt; sum) {
+        // t[n]*k &gt; sum 即 t[n] &gt; sum/k：最大块超过平均占用，永远炸不熟
+        //（乘法比较避免浮点除法；n &gt; 1 保证至少留一块，不会删空）
+        sum -= t[n];                   // 把它从总和里去掉
+        n--;  k--;                     // 连同一个锅位一起删掉
+    }
+    cout &lt;&lt; fixed &lt;&lt; setprecision(3) &lt;&lt; sum / k &lt;&lt; endl;   // 答案 = 剩余总和 ÷ 剩余锅位
+    return 0;
+}</code></pre>
+        </div>
+      </div>
+      <div class="col-r">
+        <div class="callout idea">
+          <div class="co-title">要点</div>
+          <ul>
+            <li>循环不变量：答案恒等于当前剩余集合的 \(\sum t_i \big/ k\)</li>
+            <li><code>t[n] * k &gt; sum</code> 即 \(t_n\) 与平均值比较（乘积 \(\le 10^9\)，int 安全）；<code>sum</code> 用 double 保证除法精度</li>
+          </ul>
+        </div>
+        <div class="callout note">
+          <div class="co-title">运行结果</div>
+          <pre style="font-family:var(--mono);font-size:17px;margin-top:4px">输入  4 2 / 5 1 1 2
+输出  4.000</pre>
+        </div>
+      </div>
+    </div>
+    <div class="callout idea frag" style="font-size:15px;line-height:1.45;padding:8px 14px">
+      <div class="co-title" style="margin-bottom:2px">这道题考查什么</div>
+      没有固定套路，考完整链条——① 审题：目标是持续最久，不是全部炸熟；② 建模：可行性 \(\iff \sum_i\min(t_i,T)\ge kT\)；③ 贪心与证明：上界可达（对折构造）；④ 模拟：事件驱动、并列段轮换；⑤ 细节：浮点精度与整数比较。
+    </div>
+  </div>
+  <footer><span>计算概论A · 习题课</span><span></span></footer>
+</section>
+
+</div><!-- /stage -->
+
+<div id="pager">1 / 27</div>
+<div id="help">← → 翻页 · 空格 逐条显示 · O 目录导航 · F 全屏</div>
+<div id="overview"></div>
+
+<script>
+const slides = [...document.querySelectorAll('.slide')];
+const stage  = document.getElementById('stage');
+const pager  = document.getElementById('pager');
+const bar    = document.getElementById('progress');
+let cur = 0;
+
+function fit(){
+  const s = Math.min(innerWidth/1280, innerHeight/720) * 0.985;
+  stage.style.transform = `translate(-50%,-50%) scale(${s})`;
+}
+addEventListener('resize', fit); fit();
+
+const frags   = sl => [...sl.querySelectorAll('.frag')];
+const hiddenF = sl => frags(sl).filter(f => !f.classList.contains('on'));
+
+function show(i, pushHash=true){
+  cur = Math.max(0, Math.min(i, slides.length-1));
+  slides.forEach((sl,k) => sl.classList.toggle('active', k===cur));
+  pager.textContent = `${cur+1} / ${slides.length}`;
+  bar.style.width = ((cur+1)/slides.length*100) + '%';
+  if (pushHash){ try{ history.replaceState(null,'','#'+(cur+1)); }catch(e){} }
+}
+function next(){
+  const h = hiddenF(slides[cur]);
+  if (h.length){ h[0].classList.add('on'); return; }
+  if (cur < slides.length-1) show(cur+1);
+}
+function prev(){
+  const f = frags(slides[cur]).filter(x => x.classList.contains('on'));
+  if (f.length){ f[f.length-1].classList.remove('on'); return; }
+  if (cur > 0) show(cur-1);
+}
+addEventListener('keydown', e => {
+  /* 目录导航打开时：← → 移动高亮，Enter 跳转，Esc / O 关闭 */
+  if (ov.classList.contains('open')) {
+    if (e.key === 'Escape' || e.key.toLowerCase() === 'o'){ e.preventDefault(); closeOv(); }
+    else if (e.key === 'ArrowRight'){ e.preventDefault(); ovMove(1); }
+    else if (e.key === 'ArrowLeft'){ e.preventDefault(); ovMove(-1); }
+    else if (e.key === 'Enter'){ e.preventDefault(); show(ovIdx); closeOv(); }
+    return;
+  }
+  if (['ArrowRight','ArrowDown','PageDown',' '].includes(e.key)){ e.preventDefault(); next(); }
+  else if (['ArrowLeft','ArrowUp','PageUp'].includes(e.key)){ e.preventDefault(); prev(); }
+  else if (e.key==='Home') show(0);
+  else if (e.key==='End')  show(slides.length-1);
+  else if (e.key.toLowerCase()==='o'){ e.preventDefault(); openOv(); }
+  else if (e.key.toLowerCase()==='f'){
+    document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
+  }
+});
+addEventListener('click', e => {
+  if (e.target.closest('#overview')) return;   /* 导航层内的点击不触发翻页 */
+  if (ov.classList.contains('open')) return;
+  if (e.clientX > innerWidth/2) next(); else prev();
+});
+
+/* 目录导航 */
+const ov = document.getElementById('overview');
+let ovIdx = 0;
+function buildOverview(){
+  ovIdx = cur;
+  ov.innerHTML = '<div class="ov-grid">' + slides.map((sl, i) => {
+    let kick = '', title = '';
+    if (sl.classList.contains('cover')) {
+      kick = '封面';
+      title = (sl.querySelector('.c-sub') || sl.querySelector('h1')).textContent.trim();
+    } else {
+      const k = sl.querySelector(':scope > header .kicker');
+      kick = k ? k.textContent.trim() : '';
+      const pt = sl.querySelector('.p-title');
+      const h2 = sl.querySelector('h2.title');
+      title = pt ? sl.querySelector('.p-no').textContent.trim() + ' ' + pt.textContent.trim()
+                 : (h2 ? h2.textContent.trim() : '(无标题)');
+    }
+    title = title.replace(/\\\(|\\\)|\\\[|\\\]/g, '');
+    return `<div class="ov-item${i === cur ? ' cur' : ''}" data-i="${i}">` +
+           `<div class="ov-no">${i + 1} / ${slides.length}</div>` +
+           `<div class="ov-kick">${kick}</div>` +
+           `<div class="ov-title">${title}</div></div>`;
+  }).join('') + '</div>';
+  ov.querySelectorAll('.ov-item').forEach(el => el.addEventListener('click', () => {
+    show(parseInt(el.dataset.i)); closeOv();
+  }));
+}
+function openOv(){ buildOverview(); ov.classList.add('open'); }
+function closeOv(){ ov.classList.remove('open'); }
+function ovMove(d){
+  ovIdx = (ovIdx + d + slides.length) % slides.length;
+  ov.querySelectorAll('.ov-item').forEach((el, k) => el.classList.toggle('cur', k === ovIdx));
+}
+ov.addEventListener('click', e => { if (e.target === ov) closeOv(); });
+const h0 = parseInt(location.hash.slice(1));
+show(isNaN(h0)?0:h0-1, false);
+
+/* C++ 语法高亮：单次扫描，一次性输出，避免二次匹配破坏已插入的标签 */
+const MASTER = new RegExp([
+  String.raw`(\/\/[^\n]*|\/\*[\s\S]*?\*\/)`,   // 1 注释
+  String.raw`("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')`, // 2 字符串
+  String.raw`(#[^\n]*)`,                        // 3 预处理指令
+  String.raw`\b(auto|break|case|catch|class|const|continue|default|delete|do|else|enum|for|if|inline|new|private|protected|public|return|sizeof|static|struct|switch|template|this|throw|try|typedef|typename|union|using|virtual|while|namespace)\b`, // 4 关键字
+  String.raw`\b(bool|char|double|float|int|long|short|signed|unsigned|void|string|vector|map|set|pair|queue|stack|cin|cout|endl|std|true|false|nullptr)\b`, // 5 类型与常用名
+  String.raw`\b(\d[\d']*(?:\.\d+)?)\b`         // 6 数字
+].join('|'), 'g');
+
+const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+function highlight(src){
+  return esc(src).replace(MASTER, (m, com, str, pre, kw, ty, num) => {
+    if (com) return `<span class="tok-com">${com}</span>`;
+    if (str) return `<span class="tok-str">${str}</span>`;
+    if (pre) return `<span class="tok-pre">${pre}</span>`;
+    if (kw)  return `<span class="tok-kw">${kw}</span>`;
+    if (ty)  return `<span class="tok-type">${ty}</span>`;
+    if (num) return `<span class="tok-num">${num}</span>`;
+    return m;
+  });
+}
+document.querySelectorAll('code.cpp').forEach(c => { c.innerHTML = highlight(c.textContent); });
+</script>
+</body>
+</html>
