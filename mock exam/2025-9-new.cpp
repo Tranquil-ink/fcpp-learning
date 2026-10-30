@@ -22,6 +22,16 @@ using namespace std;
 // 对应的 n 组运算的输出结果。整数部分的最高位不能为0，小数部分的最低位不能为0；如小数部分全部为0，则只输出整数部分；如整数部分为0，则从小数点开始输出；如果运算的结果为0，则输出0.
 
 
+    // equivalent nums
+vector<char> makenum(){
+    vector<char> num{'0','1','2','3','4','5','6','7','8','9'};
+    for (int i = 0;i<26;i++){
+        num.push_back((char)('A'+i));
+    }
+    return num;
+}
+vector<char> num = makenum();
+
 
 //parse input string
 
@@ -56,10 +66,11 @@ Pair parse(string s) {
         p.fpart = s.substr(dot + 1);
     }
 
-    // 纯小数，例如 .123
-    if (p.ipart.empty()) {
-        p.ipart = "0";
-    }
+    // fill in 0s
+    string padding1((101 - p.ipart.length()), '0');
+    string padding2((101 - p.fpart.length()), '0');
+    p.ipart = padding1 + p.ipart;
+    p.fpart = p.fpart + padding2;
 
     return p;
 }
@@ -74,114 +85,149 @@ int char2num(char c){
     else return (int)(10+c-'A');
 }
 
+// 比较绝对值
+int compareAbs(const Pair& x, const Pair& y){
+    for (int i = 0; i < x.ipart.length(); i++){
+        if (char2num(x.ipart[i])!=char2num(y.ipart[i])) return (char2num(x.ipart[i])>char2num(y.ipart[i])) ? 1:(-1);
+    }
+    for (int i = 0; i < x.fpart.length(); i++){
+        if (char2num(x.fpart[i])!=char2num(y.fpart[i])) return (char2num(x.fpart[i])>char2num(y.fpart[i])) ? 1:(-1);
+    }
+    return 0;
+
+}
+
+// 绝对值加法
+Pair addbit(Pair& p1, Pair & p2, int k){
+    Pair p{};
+    p.sgn = 1;
+        // USE ex to keep track
+        int ex = 0;
+        
+        for (int i = 100; i >=0; i--){
+            int current = char2num(p1.fpart[i]) + char2num(p2.fpart[i]) + ex;
+            if(current>=k){
+                p.fpart = num.at(current-k) + p.fpart;
+                ex = 1;
+            }
+            else{
+                p.fpart = num.at(current) + p.fpart;
+                ex = 0;
+            }
+        }
+        for (int i = 100; i >=0; i--){
+            int current = char2num(p1.ipart[i]) + char2num(p2.ipart[i]) + ex;
+            if(current>=k){
+                p.ipart = num.at(current-k) + p.ipart;
+                ex = 1;
+            }
+            else{
+                p.ipart = num.at(current) + p.ipart;
+                ex = 0;
+            }
+        }
+    return p;
+}
+
+Pair minusbit(Pair& p1, Pair & p2, int k){
+    Pair p{};
+    p.sgn = 1;
+        // USE ex to keep track
+        int ex = 0;
+        
+        for (int i = 100; i >=0; i--){
+            int current = char2num(p1.fpart[i]) - char2num(p2.fpart[i]) + ex;
+            if(current<0){
+                p.fpart = num.at(current+k) + p.fpart;
+                ex = -1;
+            }
+            else{
+                p.fpart = num.at(current) + p.fpart;
+                ex = 0;
+            }
+        }
+        for (int i = 100; i >=0; i--){
+            int current = char2num(p1.ipart[i]) - char2num(p2.ipart[i]) + ex;
+            if(current<0){
+                p.ipart = num.at(current+k) + p.ipart;
+                ex = -1;
+            }
+            else{
+                p.ipart = num.at(current) + p.ipart;
+                ex = 0;
+            }
+        }      
+    return p;
+}
+
+
 
 int main() {
-    // // equivalent nums
-    // vector<char> num{'0','1','2','3','4','5','6','7','8','9'};
-    // for (int i = 0;i<26;i++){
-    //     num.push_back((char)('A'+i));
-    // }
 
 
-    // // input
-    // int n;
-    // cin >> n;
-    // cin.ignore();
-    // for (int row = 0; row < n; row++){
-    //     string line;
-    //     getline(cin, line);
-    //     istringstream iss(line);
-    //     string base, s1, s2;
-    //     getline(iss, base, ' ');
-    //     getline(iss, s1, ' ');
-    //     getline(iss, s2, ' ');
-    //     int k = stoi(base);
 
-    //     //store input
-    //     //store input
-    //     Pair p1 = parse(s1);
-    //     Pair p2 = parse(s2);
+    // input
+    int n;
+    cin >> n;
+    cin.ignore();
+    for (int row = 0; row < n; row++){
+        string line;
+        getline(cin, line);
+        istringstream iss(line);
+        string base, s1, s2;
+        getline(iss, base, ' ');
+        getline(iss, s1, ' ');
+        getline(iss, s2, ' ');
+        int k = stoi(base);
 
-    //     // calculate
-    //     // USE ex to keep track
-    //     vector<int> vf{};
-    //     vector<int> vi{};
-    //     int ex = 0;
-        
-    //     for (int i = 100; i >=0; i--){
-    //         int current = p1.sgn * char2num(p1.fpart[i]) - p2.sgn * char2num(p2.fpart[i]) + ex;
-    //         if(current<0) {
-    //             vf.push_back(k+current);
-    //             ex = -1;
-    //         }
-    //         else if(current>=k){
-    //             vf.push_back(current-k);
-    //             ex = 1;
-    //         }
+        //store input
+        //store input
+        Pair p1 = parse(s1);
+        Pair p2 = parse(s2);
 
-    //     }
-    //     for (int i = 100; i >=0; i--){
-    //         int current = p1.sgn * char2num(p1.ipart[i]) - p2.sgn * char2num(p2.ipart[i]) + ex;
-    //         if(current<0) {
-    //             vi.push_back(k+current);
-    //             ex = -1;
-    //         }
-    //         else if(current>=k){
-    //             vi.push_back(current-k);
-    //             ex = 1;
-    //         }
+        // 分±讨论
+        Pair p{};
+        if (p1.sgn * p2.sgn < 0) {p = addbit(p1, p2, k);  p.sgn = p1.sgn;}
+        else{
+            p = (compareAbs(p1, p2)>0) ? minusbit(p1, p2, k) : minusbit(p2, p1, k);
+            p.sgn = (p1.sgn * compareAbs(p1, p2) >= 0) ? 1:(-1);  
+        }
 
-    //     }
-    //     // 处理多出来的首位,决定正负
-    //     if (ex == 1){
-    //         vi.push_back(1);
-    //     }
-    //     else if(ex == -1){
-    //         for (auto a : vi){
-    //             a = k-a;
-    //         }
-    //         for (auto b : vf){
-    //             b = k-b;
-    //         }
-    //         vi.push_back(1);
-    //         cout << '-';
-    //     }
 
-    //     reverse(vf.begin(),vf.end());
-    //     reverse(vi.begin(),vi.end());
+        //output
+        if (p.sgn == -1) cout <<'-';
 
-    //     //output
-    //     int indexi = -1;
-    //     int indexf = -1;
-    //     for (int i = 0; i < vi.size(); i++) {
-    //         if (vi[i]!=0) {indexi =i;break;}
-    //     }
-    //     for (int i = vf.size()-1; i >=0; i--) {
-    //         if (vf[i]!=0) {indexf =i;break;}
-    //     }
-    //     if ((indexi != -1)&& (indexf != -1)){
-    //         for (int i = indexi; i < vi.size(); i++){
-    //             cout << num[vi[i]];
-    //         }
-    //         cout << ' ';
-    //         for (int i = 0; i <= indexf; i++){
-    //             cout << num[vf[i]];
-    //         }
-    //     }
-    //     else if ((indexi == -1)&& (indexf != -1)){
+        int indexi = -1;
+        int indexf = -1;
+        for (int i = 0; i < p.ipart.length(); i++) {
+            if (p.ipart[i]!='0') {indexi =i;break;}
+        }
+        for (int i = p.ipart.length() -1; i >=0; i--) {
+            if (p.ipart[i]!='0') {indexf =i;break;}
+        }
+        if ((indexi != -1)&& (indexf != -1)){
+            for (int i = indexi; i < p.ipart.length(); i++){
+                cout << p.ipart[i];
+            }
+            cout << '.';
+            for (int i = 0; i <= indexf; i++){
+                cout << p.fpart[i];
+            }
+        }
+        else if ((indexi == -1)&& (indexf != -1)){
 
-    //         cout << ' ';
-    //         for (int i = 0; i <= indexf; i++){
-    //             cout << num[vf[i]];
-    //         }
-    //     }
-    //     else if ((indexi != -1)&& (indexf == -1)){
-    //         for (int i = indexi; i < vi.size(); i++){
-    //             cout << num[vi[i]];
-    //         }
+            cout << '.';
+            for (int i = 0; i <= indexf; i++){
+                cout << p.fpart[i];
+            }
+        }
+        else if ((indexi != -1)&& (indexf == -1)){
+            for (int i = indexi; i < p.ipart.length(); i++){
+                cout << p.ipart[i];
+            }
 
-    //     }
-    //     else cout << '0';
+        }
+        else cout << '0';
 
     
 
@@ -189,13 +235,9 @@ int main() {
 
 
 
-    // }
+    }
 
 
-    string s;
-    cin >> s;
-    Pair p = parse(s);
-    cout << p.sgn << p.ipart << '.' << p.fpart;
     
     return 0;
 }
