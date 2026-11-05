@@ -324,3 +324,35 @@ a.insert(a.end(), b.begin(), b.end());  //end()指向a最后一个元素的下�
 ```cpp
 cout << ' ' << (v[j] >= h ? '*' : ' ');
 ```
+
+## 字符串拼接
+char和string相加是字符串拼接/追加；char和char加是整数加法
+**构造重复字符的string**：`string s(0, ' ');` `string s(3, ' ')`
+**注意只能用char来构造；可以构造空串。**
+
+## isalpha
+要<cctype>库  
+传入负值alpha未定义：应`if (isalpha(static_cast<unsigned char>(c))) {}`
+
+## 取出vector/string中的一部分：
+```cpp
+vector<int> left(v.begin(), v.begin() + cut); //左闭右开，这里的cut恰好是长度
+
+// 字符串：(起始index, 长度) 注意不要混淆
+s = "Hello World"：
+s.substr(0, 5);                     // 返回 "Hello"；不修改 s
+s.substr(6);                        // 返回 "World"；省略长度表示直到末尾
+s.find("World");                   // 返回 6；找不到返回 std::string::npos
+s.find('l', 3);                     // 从下标 3 开始找，返回 3
+s.replace(0, 5, "C++");            // s 变成 "C++ World"
+s.insert(5, ",");                  // s 变成 "Hello, World"
+s.erase(5, 6);                     // s 变成 "Hello"；删除从 5 开始的 6 个字符
+s.clear();                         // s 变成空串
+//  `replace(pos, len, new_str)`：删掉旧的一段，再放入新的字符串，长度不必相同。**
+
+```
+
+
+## 普通数组
+- **全局数组默认初始化为0**；main里则不然
+- 函数chuancan`(int a[])`是传指针，可以修改a[]

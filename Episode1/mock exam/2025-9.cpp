@@ -163,14 +163,14 @@ int main() {
             for (int i = indexi; i < vi.size(); i++){
                 cout << num[vi[i]];
             }
-            cout << ' ';
+            cout << '.';
             for (int i = 0; i <= indexf; i++){
                 cout << num[vf[i]];
             }
         }
         else if ((indexi == -1)&& (indexf != -1)){
 
-            cout << ' ';
+            cout << '.';
             for (int i = 0; i <= indexf; i++){
                 cout << num[vf[i]];
             }

@@ -6,11 +6,11 @@ using namespace std;
 int frep(vector<int> v){
     int count = 1;
     int count_max = 1;
-        for (int i = 0; i < v.size(); i++){
+    for (int i = 0; i < v.size()-1; i++){
         if (v[i+1] == v[i]){
             count +=1;
         }
-        else {
+        if (v[i+1]!=v[i] || i+1 == v.size()-1) {
             if (count_max < count) count_max = count;
             count = 1;
         }
@@ -31,7 +31,7 @@ int main() {
                 v.push_back(k);
         }
         cout << frep(v) << endl;
-               
+         
     }
     return 0;
 }

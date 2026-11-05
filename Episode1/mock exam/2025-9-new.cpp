@@ -202,8 +202,8 @@ int main() {
         for (int i = 0; i < p.ipart.length(); i++) {
             if (p.ipart[i]!='0') {indexi =i;break;}
         }
-        for (int i = p.ipart.length() -1; i >=0; i--) {
-            if (p.ipart[i]!='0') {indexf =i;break;}
+        for (int i = p.fpart.length() -1; i >=0; i--) {
+            if (p.fpart[i]!='0') {indexf =i;break;}
         }
         if ((indexi != -1)&& (indexf != -1)){
             for (int i = indexi; i < p.ipart.length(); i++){
@@ -229,10 +229,7 @@ int main() {
         }
         else cout << '0';
 
-    
-
-
-
+        cout << endl;
 
 
     }
