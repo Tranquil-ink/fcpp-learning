@@ -18,3 +18,20 @@
 - **shift+alt+a** 注释一块代码
 
 # 常用代码块
+### 把数组开在全局，在main里再设定大小
+```cpp
+vector<vector<int>> v;
+int main(){
+    int n,m;
+    cin >>n>>m;
+    v.resize(n, vector<int>(m)); //将新增的元素初始化为0
+}
+int main(){ //若有多组测试数据
+    int T; cin >>T;
+    while (T--){
+        int n, m; cin >>n>>m;
+        v.resize(n, vector<int>(m, 0)); //重新构造整个数组，手动初始化为0
+    }
+}
+```
+
