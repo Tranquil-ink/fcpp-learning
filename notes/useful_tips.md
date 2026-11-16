@@ -13,6 +13,8 @@
 - **数组的全局上界**写成const int MAXN = 1005，而不是a[1005],b[1005],c[1005]，以防打错   
 **循环的上界**也建议写成全局的常量。
 
+- 在写搜索/模拟等算法时，判断顺序固定为：**先判断坐标合法，再访问数组，再判断是否属于本次要搜的区域、是否访问过。** 不要先计算 `a[nx][ny]` 再检查越界。（例：魔王军队、菌落数量）
+
 # 快捷键
 - **shift+alt+f** 一键排版代码
 - **shift+alt+a** 注释一块代码
@@ -34,4 +36,46 @@ int main(){ //若有多组测试数据
     }
 }
 ```
+### 忽略前0；从最后一个，开始看
+```cpp
+    int index = 0;
 
+    while(sum[index]==0&&index<sum.size()-1){
+        index ++;
+    }
+    for (int i = index; i < sum.size(); i++){
+        cout << sum[i];
+    }
+```
+### 输出矩阵
+```cpp
+for (int i =0;i<n;i++){
+    for(int j=0;j<m;j++){
+        cout << v[i][j];
+        cout << (j==m-1 ? '\n' : ' ');
+    }
+}
+```
+
+
+    v.resize(n, string(l,'0'));
+
+## 复杂输入 3-3-6
+多行，每行一个用空格分割的后缀表达式。保证表达式长度不超过1000个字符。
+表达式中可能出现整数，+ - * /四种运算符，以及@。
+```cpp
+int main() {
+    string line;
+    while(getline(cin,line)){
+        istringstream iss(line);
+        string token;
+        stack<long long> st{};
+        bool bad = false;
+        while(iss>>token && token!="@"){
+        //...
+        }
+        cout << (bad==true ? "NaN" : to_string(st.top())) << endl;
+    }
+    return 0;
+}
+```

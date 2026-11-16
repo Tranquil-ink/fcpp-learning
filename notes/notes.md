@@ -69,16 +69,18 @@ pos 默认是 nullptr，base 默认是 10；
 base 可以是 0 或 2 ~ 36 之间的整数。  
 当 base 为 0 时，stoi 会根据字符串前缀自动判断进制：
 ```cpp
+stoi("1A", nullptr, 16); // 26，按十六进制
+stoi("1A", nullptr, 0); // 不行
 stoi("0x1A", nullptr, 0); // 26，按十六进制
 stoi("017",  nullptr, 0); // 15，按八进制
 stoi("123",  nullptr, 0); // 123，按十进制
-stoi("0b101",nullptr, 0); 
-// base=0 不识别 0b 前缀！"0b101" 会被解析成 0（遇到 b 停止）。要解析二进制必须显式写 base=2
+stoi("0b101",nullptr, 0); //不行
+// base=0 不识别 0b 前缀！"0b101" 会被解析成 0（遇到 b 停止）。
 ```
 2. 输入字面量
 ```cpp
 int main() {
-    int x = 0b1011; // 二进制字面量
+    int x = 0b1011; // 二进制字面量，0B1011,0X1A,0x1A,0x1a等均能识别
     cout << x << endl; // 输出 11
     return 0;
 }
@@ -130,7 +132,8 @@ int main() {
     // 创建 3 行 4 列，初始值为 0
     std::vector<std::vector<int>> arr(rows, std::vector<int>(cols, 0));
     //如果要把每一行初始化为空数组，就写
-    std::vector<std::vector<int>> arr(rows, std::vector<int>(cols));
+    std::vector<std::vector<int>> arr(rows);
+    v.resize(rows); //也可以
 
     // 赋值
     for (int i = 0; i < rows; ++i)
@@ -351,7 +354,7 @@ s.clear();                         // s 变成空串
 //  `replace(pos, len, new_str)`：删掉旧的一段，再放入新的字符串，长度不必相同。**
 
 ```
-
+## string也可以reverse
 
 ## 普通数组
 - **全局数组默认初始化为0**；main里则不然
