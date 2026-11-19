@@ -112,3 +112,19 @@ for (i = 0; i < n; ++i) {}
 ## RTE
 检查输入输出有没有问题，比如iss>>token写成cin
 ## switch case 一定要加break，否则一次进行到底
+
+## min,max函数似乎要求参数类型相同，不能一个int一个longlong
+
+## 不要漏cin；不要再cin之前使用变量
+```cpp
+/* 错误示例 */
+    int N;
+    n=m=N //nm是全局变量
+    
+    while(cin>> N&&N!=-1){
+        n=m=N; //应该放这里
+        ...}
+```
+
+## 记忆化搜索时，不要忘记在递归之后要加新增项
+4-2-6滑雪，dfs[x][y]=dfs[x1][y1]+1
